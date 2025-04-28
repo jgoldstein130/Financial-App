@@ -1,27 +1,41 @@
-'use client'
+"use client";
 
-// TODO: make this a server component but make a new component for the accordion which is a client component
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import AccountAccordion from "./Components/AccountAccordion";
+import { useState } from "react";
 
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
+interface Account {
+  name: string;
+}
 
 const Home = () => {
-  return <div>financial app
-    <Accordion>
-        <AccordionSummary
-          // expandIcon={<ArrowDownwardIcon />}
-          aria-controls="panel1-content"
-          id="panel1-header"
-        >
-          Accordion 1
-        </AccordionSummary>
-        <AccordionDetails>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-        </AccordionDetails>
-      </Accordion>
-  </div>;
+  const [accounts, setAccounts] = useState<Account[]>([]);
+
+  const addAccount = () => {
+    setAccounts((prevAccounts) => [...prevAccounts, { name: "Roth IRA" }]);
+  };
+
+  return (
+    <div>
+      <Card sx={{ height: "100vh", backgroundColor: "#eee" }}>
+        <CardContent>
+          <button
+            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md"
+            onClick={addAccount}
+          >
+            Add Account
+          </button>
+          {accounts.map((account, index) => (
+            <AccountAccordion
+              name={account.name}
+              key={account.name + "-" + index}
+            />
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
 };
 
 export default Home;
