@@ -14,29 +14,46 @@ const AccountAccordion = ({ children, ...props }: Props) => {
   ) => {
     if (!props.account.name) return;
 
-    if (field === "startingBalance") {
-      const sanitizedValue = e.target.value.replace(/[^0-9.]/g, "");
-      const formattedValue = sanitizedValue ? `$${sanitizedValue}` : "";
+    let sanitizedValue;
+    let formattedValue;
 
-      props.updateAccount(props.account.name, {
-        ...props.account,
-        startingBalance: formattedValue,
-      });
+    sanitizedValue = e.target.value.replace(/[^0-9.]/g, "");
+
+    if (field === "startingBalance" || field === "monthlyContribution") {
+      formattedValue = sanitizedValue ? `$${sanitizedValue}` : "";
+    } else if (field === "annualInterest") {
+      formattedValue = sanitizedValue || "";
     }
+
+    props.updateAccount(props.account.name, {
+      ...props.account,
+      [field]: formattedValue,
+    });
   };
 
   const cleanAccountValue = (field: string) => {
     if (!props.account.name) return;
 
+    let newValue;
+
     if (field === "startingBalance") {
-      const newStartingBalance = props.account.startingBalance
+      newValue = props.account.startingBalance
         ? "$" + Number(props.account.startingBalance.slice(1)).toFixed(2)
         : "";
-      props.updateAccount(props.account.name, {
-        ...props.account,
-        startingBalance: newStartingBalance,
-      });
+    } else if (field === "annualInterest") {
+      newValue = props.account.annualInterest
+        ? Number(props.account.annualInterest).toFixed(2) + "%"
+        : "";
+    } else if (field === "monthlyContribution") {
+      newValue = props.account.monthlyContribution
+        ? "$" + Number(props.account.monthlyContribution.slice(1)).toFixed(2)
+        : "";
     }
+
+    props.updateAccount(props.account.name, {
+      ...props.account,
+      [field]: newValue,
+    });
   };
 
   return (
@@ -60,12 +77,16 @@ const AccountAccordion = ({ children, ...props }: Props) => {
           <TextField
             label="Annual Interest (%)"
             variant="outlined"
-            type="number"
+            value={props.account.annualInterest || ""}
+            onChange={(e) => handleAccountValueChange(e, "annualInterest")}
+            onBlur={() => cleanAccountValue("annualInterest")}
           />
           <TextField
             label="Monthly Contribution"
             variant="outlined"
-            type="number"
+            value={props.account.monthlyContribution || ""}
+            onChange={(e) => handleAccountValueChange(e, "monthlyContribution")}
+            onBlur={() => cleanAccountValue("monthlyContribution")}
           />
           {children}
         </Box>
