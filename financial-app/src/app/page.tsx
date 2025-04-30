@@ -32,23 +32,33 @@ const Home = () => {
     );
   };
 
+  const deleteAccountByName = (name: string) => {
+    setAccounts((prevAccounts) =>
+      prevAccounts.filter((account) => account.name !== name)
+    );
+  };
+
   return (
     <div>
       <Card sx={{ height: "100vh", backgroundColor: "#eee" }}>
         <CardContent>
           <button
-            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md"
+            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md"
             onClick={addAccount}
           >
             Add Account
           </button>
-          {accounts.map((account, index) => (
-            <AccountAccordion
-              account={account}
-              updateAccount={updateAccountByName}
-              key={account.name + "-" + index}
-            />
-          ))}
+
+          <div className="pt-5">
+            {accounts.map((account, index) => (
+              <AccountAccordion
+                account={account}
+                updateAccount={updateAccountByName}
+                deleteAccount={deleteAccountByName}
+                key={account.name + "-" + index}
+              />
+            ))}
+          </div>
         </CardContent>
       </Card>
     </div>
