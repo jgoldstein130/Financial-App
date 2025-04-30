@@ -6,6 +6,7 @@ import TextField from "@mui/material/TextField";
 import { ChangeEvent, ReactNode } from "react";
 import Box from "@mui/material/Box";
 import { Account } from "../page";
+import { Button } from "@mui/material";
 
 const AccountAccordion = ({ children, ...props }: Props) => {
   const handleAccountValueChange = (
@@ -56,6 +57,12 @@ const AccountAccordion = ({ children, ...props }: Props) => {
     });
   };
 
+  const handleDeleteButtonClick = () => {
+    if (props.account.name) {
+      props.deleteAccount(props.account.name);
+    }
+  };
+
   return (
     <Accordion>
       <AccordionSummary
@@ -89,6 +96,14 @@ const AccountAccordion = ({ children, ...props }: Props) => {
             onBlur={() => cleanAccountValue("monthlyContribution")}
           />
           {children}
+          <Button
+            variant="outlined"
+            color="error"
+            disableRipple
+            onClick={() => handleDeleteButtonClick()}
+          >
+            Delete Account
+          </Button>
         </Box>
       </AccordionDetails>
     </Accordion>
@@ -99,6 +114,7 @@ interface Props {
   children?: ReactNode;
   account: Account;
   updateAccount: (name: string, updatedAccount: Account) => void;
+  deleteAccount: (name: string) => void;
 }
 
 export default AccountAccordion;
