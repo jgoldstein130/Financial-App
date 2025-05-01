@@ -6,14 +6,15 @@ import TextField from "@mui/material/TextField";
 import { ChangeEvent, ReactNode } from "react";
 import Box from "@mui/material/Box";
 import { Account } from "../page";
-import { Button } from "@mui/material";
+import { Button, IconButton, InputAdornment } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 
 const AccountAccordion = ({ children, ...props }: Props) => {
   const handleAccountValueChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: string
   ) => {
-    if (!props.account.name) return;
+    if (!props.account.id) return;
 
     let sanitizedValue;
     let formattedValue;
@@ -26,14 +27,14 @@ const AccountAccordion = ({ children, ...props }: Props) => {
       formattedValue = sanitizedValue || "";
     }
 
-    props.updateAccount(props.account.name, {
+    props.updateAccount(props.account.id, {
       ...props.account,
       [field]: formattedValue,
     });
   };
 
   const cleanAccountValue = (field: string) => {
-    if (!props.account.name) return;
+    if (!props.account.id) return;
 
     let newValue;
 
@@ -51,15 +52,15 @@ const AccountAccordion = ({ children, ...props }: Props) => {
         : "";
     }
 
-    props.updateAccount(props.account.name, {
+    props.updateAccount(props.account.id, {
       ...props.account,
       [field]: newValue,
     });
   };
 
   const handleDeleteButtonClick = () => {
-    if (props.account.name) {
-      props.deleteAccount(props.account.name);
+    if (props.account.id) {
+      props.deleteAccount(props.account.id);
     }
   };
 
@@ -70,7 +71,18 @@ const AccountAccordion = ({ children, ...props }: Props) => {
         aria-controls="panel1-content"
         id="panel1-header"
       >
-        {props.account.name}
+        <TextField
+          variant="standard"
+          value={props.account.name}
+          InputProps={{
+            disableUnderline: true,
+            startAdornment: (
+              <InputAdornment position="start">
+                <EditIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+        />
       </AccordionSummary>
       <AccordionDetails>
         <Box display="flex" flexDirection="column" gap={2}>
