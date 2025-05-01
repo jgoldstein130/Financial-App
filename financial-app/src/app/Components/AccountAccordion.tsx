@@ -3,13 +3,15 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TextField from "@mui/material/TextField";
-import { ChangeEvent, ReactNode } from "react";
-import Box from "@mui/material/Box";
+import { ChangeEvent, ReactNode, useState } from "react";
 import { Account } from "../page";
-import { Button, IconButton, InputAdornment } from "@mui/material";
+import { Button, Box, Modal, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
 const AccountAccordion = ({ children, ...props }: Props) => {
+  const [editAccountModalIsOpen, setEditAccountModalIsOpen] =
+    useState<boolean>(false);
+
   const handleAccountValueChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: string
@@ -64,61 +66,92 @@ const AccountAccordion = ({ children, ...props }: Props) => {
     }
   };
 
+  const openEditAccountModal = (
+    e: React.MouseEvent<SVGSVGElement, MouseEvent>
+  ) => {
+    setEditAccountModalIsOpen(true);
+    e.stopPropagation();
+  };
+
+  // TODO: make newly added accounts expanded and only one account expanded at a time
+  //  - have a variable that is the id of the account that is expanded and the accordion checks if that variable is its id to know if it should be expanded
+  // TODO: add edit account modal
+  // TODO: add create account modal
+
   return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1-content"
-        id="panel1-header"
+    <>
+      <Modal
+        open={editAccountModalIsOpen}
+        onClose={() => setEditAccountModalIsOpen(false)}
       >
-        <TextField
-          variant="standard"
-          value={props.account.name}
-          InputProps={{
-            disableUnderline: true,
-            startAdornment: (
-              <InputAdornment position="start">
-                <EditIcon fontSize="small" />
-              </InputAdornment>
-            ),
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
           }}
-        />
-      </AccordionSummary>
-      <AccordionDetails>
-        <Box display="flex" flexDirection="column" gap={2}>
-          <TextField
-            label="Starting Balance"
-            variant="outlined"
-            value={props.account.startingBalance || ""}
-            onChange={(e) => handleAccountValueChange(e, "startingBalance")}
-            onBlur={() => cleanAccountValue("startingBalance")}
-          />
-          <TextField
-            label="Annual Interest (%)"
-            variant="outlined"
-            value={props.account.annualInterest || ""}
-            onChange={(e) => handleAccountValueChange(e, "annualInterest")}
-            onBlur={() => cleanAccountValue("annualInterest")}
-          />
-          <TextField
-            label="Monthly Contribution"
-            variant="outlined"
-            value={props.account.monthlyContribution || ""}
-            onChange={(e) => handleAccountValueChange(e, "monthlyContribution")}
-            onBlur={() => cleanAccountValue("monthlyContribution")}
-          />
-          {children}
-          <Button
-            variant="outlined"
-            color="error"
-            disableRipple
-            onClick={() => handleDeleteButtonClick()}
-          >
-            Delete Account
-          </Button>
+        >
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Edit Account
+          </Typography>
         </Box>
-      </AccordionDetails>
-    </Accordion>
+      </Modal>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          <EditIcon
+            fontSize="small"
+            className="mt-1 mr-2"
+            onClick={(e) => openEditAccountModal(e)}
+          />
+          {props.account.name}
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box display="flex" flexDirection="column" gap={2}>
+            <TextField
+              label="Starting Balance"
+              variant="outlined"
+              value={props.account.startingBalance || ""}
+              onChange={(e) => handleAccountValueChange(e, "startingBalance")}
+              onBlur={() => cleanAccountValue("startingBalance")}
+            />
+            <TextField
+              label="Annual Interest (%)"
+              variant="outlined"
+              value={props.account.annualInterest || ""}
+              onChange={(e) => handleAccountValueChange(e, "annualInterest")}
+              onBlur={() => cleanAccountValue("annualInterest")}
+            />
+            <TextField
+              label="Monthly Contribution"
+              variant="outlined"
+              value={props.account.monthlyContribution || ""}
+              onChange={(e) =>
+                handleAccountValueChange(e, "monthlyContribution")
+              }
+              onBlur={() => cleanAccountValue("monthlyContribution")}
+            />
+            {children}
+            <Button
+              variant="outlined"
+              color="error"
+              disableRipple
+              onClick={() => handleDeleteButtonClick()}
+            >
+              Delete Account
+            </Button>
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+    </>
   );
 };
 
