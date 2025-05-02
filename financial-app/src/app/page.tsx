@@ -15,16 +15,17 @@ export interface Account {
   monthlyContribution?: string;
 }
 
-// TODO: add ability to change account name
-
 const Home = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [expandedAccount, setExpandedAccount] = useState<string>("");
 
   const addAccount = () => {
+    const id = uuid();
     setAccounts((prevAccounts) => [
       ...prevAccounts,
-      { name: "New Account", id: uuid() },
+      { name: "New Account", id: id },
     ]);
+    setExpandedAccount(id);
   };
 
   const updateAccount = (id: string, updatedAccount: Account) => {
@@ -99,6 +100,8 @@ const Home = () => {
                   account={account}
                   updateAccount={updateAccount}
                   deleteAccount={deleteAccount}
+                  expandedAccount={expandedAccount}
+                  setExpandedAccount={setExpandedAccount}
                 />
               </div>
             ))}

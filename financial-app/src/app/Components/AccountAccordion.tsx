@@ -73,10 +73,20 @@ const AccountAccordion = ({ children, ...props }: Props) => {
     e.stopPropagation();
   };
 
-  // TODO: make newly added accounts expanded and only one account expanded at a time
-  //  - have a variable that is the id of the account that is expanded and the accordion checks if that variable is its id to know if it should be expanded
+  const handleAccordionClick = () => {
+    if (!props.account.id) {
+      return;
+    }
+    if (props.expandedAccount !== props.account.id) {
+      props.setExpandedAccount(props.account.id);
+    } else {
+      props.setExpandedAccount("");
+    }
+  };
+
   // TODO: add edit account modal
   // TODO: add create account modal
+  // TODO: change color of edit icon on hover
 
   return (
     <>
@@ -101,7 +111,10 @@ const AccountAccordion = ({ children, ...props }: Props) => {
           </Typography>
         </Box>
       </Modal>
-      <Accordion>
+      <Accordion
+        expanded={props.account.id === props.expandedAccount}
+        onChange={handleAccordionClick}
+      >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1-content"
@@ -160,6 +173,8 @@ interface Props {
   account: Account;
   updateAccount: (name: string, updatedAccount: Account) => void;
   deleteAccount: (name: string) => void;
+  expandedAccount: string;
+  setExpandedAccount: (id: string) => void;
 }
 
 export default AccountAccordion;
