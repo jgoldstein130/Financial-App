@@ -2,7 +2,7 @@
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import AccountAccordion from "./Components/AccountAccordion";
+import AccountAccordion from "./Components/AccountAccordion/AccountAccordion";
 import { v4 as uuid } from "uuid";
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
@@ -78,7 +78,7 @@ const Home = () => {
         >
           <CardContent sx={{ flex: "0 0 auto" }}>
             <button
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md"
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-md"
               onClick={addAccount}
             >
               Add Account

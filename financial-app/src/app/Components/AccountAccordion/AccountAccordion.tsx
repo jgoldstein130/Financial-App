@@ -4,13 +4,18 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TextField from "@mui/material/TextField";
 import { ChangeEvent, ReactNode, useState } from "react";
-import { Account } from "../page";
+import { Account } from "../../page";
 import { Button, Box, Modal, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import "./AccountAccordion.css";
+import EditAccountModal from "../EditAccountModal/EditAccountModal";
 
 const AccountAccordion = ({ children, ...props }: Props) => {
   const [editAccountModalIsOpen, setEditAccountModalIsOpen] =
     useState<boolean>(false);
+  const [accountAfterEdit, setAccountAfterEdit] = useState<Account>(
+    props.account
+  );
 
   const handleAccountValueChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -84,33 +89,33 @@ const AccountAccordion = ({ children, ...props }: Props) => {
     }
   };
 
-  // TODO: add edit account modal
+  const handleEditAccountModalClose = () => {
+    setEditAccountModalIsOpen(false);
+    setAccountAfterEdit(props.account);
+  };
+
+  const handleEditAccountModalSave = () => {
+    if (!props.account.id) return;
+
+    props.updateAccount(props.account.id, {
+      ...props.account,
+      name: accountAfterEdit.name,
+    });
+  };
+
   // TODO: add create account modal
-  // TODO: change color of edit icon on hover
 
   return (
     <>
-      <Modal
-        open={editAccountModalIsOpen}
-        onClose={() => setEditAccountModalIsOpen(false)}
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Edit Account
-          </Typography>
-        </Box>
-      </Modal>
+      <EditAccountModal
+        accountName={props.account.name || ""}
+        onSave={handleEditAccountModalSave}
+        onCancel={handleEditAccountModalClose}
+        isOpen={editAccountModalIsOpen}
+        onClose={handleEditAccountModalClose}
+        accountAfterEdit={accountAfterEdit}
+        setAccountAfterEdit={setAccountAfterEdit}
+      />
       <Accordion
         expanded={props.account.id === props.expandedAccount}
         onChange={handleAccordionClick}
@@ -122,7 +127,7 @@ const AccountAccordion = ({ children, ...props }: Props) => {
         >
           <EditIcon
             fontSize="small"
-            className="mt-1 mr-2"
+            className="mt-1 mr-2 edit-icon"
             onClick={(e) => openEditAccountModal(e)}
           />
           {props.account.name}
@@ -171,8 +176,8 @@ const AccountAccordion = ({ children, ...props }: Props) => {
 interface Props {
   children?: ReactNode;
   account: Account;
-  updateAccount: (name: string, updatedAccount: Account) => void;
-  deleteAccount: (name: string) => void;
+  updateAccount: (id: string, updatedAccount: Account) => void;
+  deleteAccount: (id: string) => void;
   expandedAccount: string;
   setExpandedAccount: (id: string) => void;
 }
