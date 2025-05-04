@@ -101,6 +101,8 @@ const AccountAccordion = ({ children, ...props }: Props) => {
       ...props.account,
       name: accountAfterEdit.name,
     });
+
+    setEditAccountModalIsOpen(false);
   };
 
   // TODO: add create account modal
