@@ -15,15 +15,33 @@ const GraphSection = ({ children, ...props }: Props) => {
     return xAxis;
   };
 
+  const sumArraysIn2dArray = (arr: number[][]) => {
+    if (arr.length === 0) return [];
+    const total = [...arr[0]];
+    for (let i = 1; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].length; j++) {
+        total[j] += arr[i][j];
+      }
+    }
+    return total;
+  };
+
   const getDataForAllAccounts = (numYears: number) => {
     const data = [];
-    for (let i = 0; i < props.accounts.length; i++) {
-      data.push({
-        data: getDataForAnAccount(props.accounts[i], numYears),
-        label: props.accounts[i].name,
-      });
+    if (props.mode === "individual accounts") {
+      for (let i = 0; i < props.accounts.length; i++) {
+        data.push({
+          data: getDataForAnAccount(props.accounts[i], numYears),
+          label: props.accounts[i].name,
+        });
+      }
+      return data;
+    } else if (props.mode === "net worth") {
+      for (let i = 0; i < props.accounts.length; i++) {
+        data.push(getDataForAnAccount(props.accounts[i], numYears));
+      }
+      return [{ data: sumArraysIn2dArray(data), label: "Net Worth" }];
     }
-    return data;
   };
 
   const getDataForAnAccount = (account: Account, numYears: number) => {
@@ -41,7 +59,7 @@ const GraphSection = ({ children, ...props }: Props) => {
     for (let i = 1; i <= numYears; i++) {
       balanceAtTimes.push(
         balanceAtTimes[balanceAtTimes.length - 1] +
-          balanceAtTimes[balanceAtTimes.length - 1] * Number(annualInterest)
+          balanceAtTimes[balanceAtTimes.length - 1] * annualInterest
       );
     }
     return balanceAtTimes;
@@ -51,7 +69,7 @@ const GraphSection = ({ children, ...props }: Props) => {
     <div style={{ height: "300px", marginTop: "20px" }}>
       <LineChart
         xAxis={[{ data: xAxisGenerator(24, 65) }]}
-        series={getDataForAllAccounts(65 - 24)}
+        series={getDataForAllAccounts(65 - 24) || []}
         height={200}
         margin={0}
       />
@@ -62,6 +80,7 @@ const GraphSection = ({ children, ...props }: Props) => {
 interface Props {
   children?: ReactNode;
   accounts: Account[];
+  mode: "individual accounts" | "net worth";
 }
 
 export default GraphSection;
