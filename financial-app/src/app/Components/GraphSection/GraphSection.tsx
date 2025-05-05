@@ -15,6 +15,17 @@ const GraphSection = ({ children, ...props }: Props) => {
     return xAxis;
   };
 
+  const getDataForAllAccounts = (numYears: number) => {
+    const data = [];
+    for (let i = 0; i < props.accounts.length; i++) {
+      data.push({
+        data: getDataForAnAccount(props.accounts[i], numYears),
+        label: props.accounts[i].name,
+      });
+    }
+    return data;
+  };
+
   const getDataForAnAccount = (account: Account, numYears: number) => {
     if (!account.startingBalance || !account.annualInterest) {
       return [];
@@ -40,17 +51,7 @@ const GraphSection = ({ children, ...props }: Props) => {
     <div style={{ height: "300px", marginTop: "20px" }}>
       <LineChart
         xAxis={[{ data: xAxisGenerator(24, 65) }]}
-        series={[
-          {
-            data:
-              props.accounts.length > 0
-                ? getDataForAnAccount(props.accounts[0], 65 - 24)
-                : [],
-          },
-          // {
-          //    data: [null, null, null, null, 5.5, 2, 8.5, 1.5, 5],
-          // },
-        ]}
+        series={getDataForAllAccounts(65 - 24)}
         height={200}
         margin={0}
       />
