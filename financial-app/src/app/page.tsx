@@ -7,6 +7,7 @@ import { v4 as uuid } from "uuid";
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import AddAccountModal from "./Components/AddAccountModal/AddAccountModal";
+import GraphSection from "./Components/GraphSection/GraphSection";
 
 export interface Account {
   name?: string;
@@ -126,7 +127,7 @@ const Home = () => {
             <Card sx={{ flex: 1 }}>
               <CardContent>
                 <Typography variant="h6">Graph</Typography>
-                <div style={{ height: "300px" }}>[Graph Placeholder]</div>
+                <GraphSection accounts={accounts} />
               </CardContent>
             </Card>
             <Card sx={{ flex: 1 }}>
