@@ -2,8 +2,16 @@ import { ReactNode } from "react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { Account } from "@/app/page";
 
+// TODO: Maybe have a choice of how often you contribute to an account
+
+// Get graph labels to show the whole number or 10K instead of 10,000 when numbers are big
+// Fix hydration errors
+
+// TODO: Add tax rate to accounts, maybe add account type and roth accounts will not have tax field
+
 // TODO: We need a way to get current age and retirement age to get the xAxis
 // TODO: This should probably be in the section that will get other info like salary so we can do stuff like % of income saved
+
 // TODO: We want to do calculations for after retirement too
 
 const GraphSection = ({ children, ...props }: Props) => {
@@ -45,7 +53,11 @@ const GraphSection = ({ children, ...props }: Props) => {
   };
 
   const getDataForAnAccount = (account: Account, numYears: number) => {
-    if (!account.startingBalance || !account.annualInterest) {
+    if (
+      !account.startingBalance ||
+      !account.annualInterest ||
+      !account.monthlyContribution
+    ) {
       return [];
     }
 
@@ -54,15 +66,46 @@ const GraphSection = ({ children, ...props }: Props) => {
     );
     const annualInterest =
       Number(account.annualInterest.replace(/[^0-9.]/g, "")) / 100;
+    const monthlyContribution = Number(
+      account.monthlyContribution.replace(/[^0-9.]/g, "")
+    );
 
-    let balanceAtTimes: number[] = [startingBalance];
-    for (let i = 1; i <= numYears; i++) {
-      balanceAtTimes.push(
-        balanceAtTimes[balanceAtTimes.length - 1] +
-          balanceAtTimes[balanceAtTimes.length - 1] * annualInterest
+    const monthlyInterest = annualInterest / 12;
+    numYears -= 1;
+    const numMonths = numYears * 12;
+
+    let balanceEveryMonthyStartingBalance: number[] = [startingBalance];
+    let balanceEveryMonthFromContributions: number[] = [0];
+    let totalBalanceEveryMonth: number[] = [];
+    for (let i = 1; i <= numMonths; i++) {
+      balanceEveryMonthFromContributions.push(
+        balanceEveryMonthFromContributions[
+          balanceEveryMonthFromContributions.length - 1
+        ] +
+          monthlyContribution * Math.pow(1 + monthlyInterest, i - 1)
       );
     }
-    return balanceAtTimes;
+    for (let i = 1; i <= numMonths; i++) {
+      balanceEveryMonthyStartingBalance.push(
+        balanceEveryMonthyStartingBalance[
+          balanceEveryMonthyStartingBalance.length - 1
+        ] +
+          balanceEveryMonthyStartingBalance[
+            balanceEveryMonthyStartingBalance.length - 1
+          ] *
+            monthlyInterest
+      );
+    }
+    totalBalanceEveryMonth = sumArraysIn2dArray([
+      balanceEveryMonthyStartingBalance,
+      balanceEveryMonthFromContributions,
+    ]);
+
+    const totalBalanceEveryYear = totalBalanceEveryMonth.filter(
+      (_, index) => (index + 1) % 12 === 1
+    );
+
+    return totalBalanceEveryYear;
   };
 
   return (
