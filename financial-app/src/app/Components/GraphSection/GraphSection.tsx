@@ -4,7 +4,6 @@ import { Account } from "@/app/page";
 
 // TODO: Maybe have a choice of how often you contribute to an account
 
-// Get graph labels to show the whole number or 10K instead of 10,000 when numbers are big
 // Fix hydration errors
 
 // TODO: Add tax rate to accounts, maybe add account type and roth accounts will not have tax field
@@ -108,11 +107,33 @@ const GraphSection = ({ children, ...props }: Props) => {
     return totalBalanceEveryYear;
   };
 
+  const getShorthandForBigNumbers = (num: number) => {
+    if (num >= 1000 && num < 1000000) {
+      return (num / 1000).toFixed(2) + "K";
+    } else if (num >= 1000000 && num < 1000000000) {
+      return (num / 1000000).toFixed(2) + "M";
+    } else {
+      return num.toFixed(2).toString();
+    }
+  };
+
   return (
     <div style={{ height: "300px", marginTop: "20px" }}>
       <LineChart
-        xAxis={[{ data: xAxisGenerator(24, 65) }]}
-        series={getDataForAllAccounts(65 - 24) || []}
+        series={(getDataForAllAccounts(65 - 24) || []).map((series) => ({
+          ...series,
+          valueFormatter: (value) =>
+            value !== null ? "$" + getShorthandForBigNumbers(value) : "",
+        }))}
+        xAxis={[{ data: xAxisGenerator(24, 65), label: "Year" }]}
+        yAxis={[
+          {
+            label: "Balance ($)",
+            width: 80,
+            valueFormatter: (balance: number) =>
+              getShorthandForBigNumbers(balance),
+          },
+        ]}
         height={200}
         margin={0}
       />
