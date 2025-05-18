@@ -13,6 +13,10 @@ import { Account } from "@/app/page";
 
 // TODO: We want to do calculations for after retirement too
 
+// make graphs better fit their box
+
+// add more ticks to y axis
+
 const GraphSection = ({ children, ...props }: Props) => {
   const xAxisGenerator = (currentAge: number, retirementAge: number) => {
     const xAxis: number[] = [];
