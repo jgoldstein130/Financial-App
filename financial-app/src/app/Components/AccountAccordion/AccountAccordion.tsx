@@ -17,26 +17,40 @@ const AccountAccordion = ({ children, ...props }: Props) => {
     props.account
   );
 
+  const sanitizeString = (str: string) => {
+    return str.replace(/[^0-9.]/g, "");
+  };
+
   const handleAccountValueChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: string
   ) => {
     if (!props.account.id) return;
 
+    const sanitizedValue = sanitizeString(e.target.value);
+
+    props.updateAccount(props.account.id, {
+      ...props.account,
+      [field]: sanitizedValue,
+    });
+  };
+
+  const handleAccountValueClick = (field: string) => {
+    if (!props.account.id) return;
+
     let sanitizedValue;
-    let formattedValue;
 
-    sanitizedValue = e.target.value.replace(/[^0-9.]/g, "");
-
-    if (field === "startingBalance" || field === "monthlyContribution") {
-      formattedValue = sanitizedValue ? `$${sanitizedValue}` : "";
+    if (field === "startingBalance") {
+      sanitizedValue = sanitizeString(props.account.startingBalance || "");
     } else if (field === "annualInterest") {
-      formattedValue = sanitizedValue || "";
+      sanitizedValue = sanitizeString(props.account.annualInterest || "");
+    } else if (field === "monthlyContribution") {
+      sanitizedValue = sanitizeString(props.account.monthlyContribution || "");
     }
 
     props.updateAccount(props.account.id, {
       ...props.account,
-      [field]: formattedValue,
+      [field]: sanitizedValue,
     });
   };
 
@@ -47,7 +61,7 @@ const AccountAccordion = ({ children, ...props }: Props) => {
 
     if (field === "startingBalance") {
       newValue = props.account.startingBalance
-        ? "$" + Number(props.account.startingBalance.slice(1)).toFixed(2)
+        ? "$" + Number(props.account.startingBalance).toFixed(2)
         : "";
     } else if (field === "annualInterest") {
       newValue = props.account.annualInterest
@@ -55,7 +69,7 @@ const AccountAccordion = ({ children, ...props }: Props) => {
         : "";
     } else if (field === "monthlyContribution") {
       newValue = props.account.monthlyContribution
-        ? "$" + Number(props.account.monthlyContribution.slice(1)).toFixed(2)
+        ? "$" + Number(props.account.monthlyContribution).toFixed(2)
         : "";
     }
 
@@ -139,14 +153,18 @@ const AccountAccordion = ({ children, ...props }: Props) => {
               variant="outlined"
               value={props.account.startingBalance || ""}
               onChange={(e) => handleAccountValueChange(e, "startingBalance")}
+              onClick={() => handleAccountValueClick("startingBalance")}
               onBlur={() => cleanAccountValue("startingBalance")}
+              autoComplete="off"
             />
             <TextField
               label="Annual Interest (%)"
               variant="outlined"
               value={props.account.annualInterest || ""}
               onChange={(e) => handleAccountValueChange(e, "annualInterest")}
+              onClick={() => handleAccountValueClick("annualInterest")}
               onBlur={() => cleanAccountValue("annualInterest")}
+              autoComplete="off"
             />
             <TextField
               label="Monthly Contribution"
@@ -155,7 +173,9 @@ const AccountAccordion = ({ children, ...props }: Props) => {
               onChange={(e) =>
                 handleAccountValueChange(e, "monthlyContribution")
               }
+              onClick={() => handleAccountValueClick("monthlyContribution")}
               onBlur={() => cleanAccountValue("monthlyContribution")}
+              autoComplete="off"
             />
             {children}
             <Button
