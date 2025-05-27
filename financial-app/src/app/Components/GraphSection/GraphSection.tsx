@@ -4,18 +4,11 @@ import { Account } from "@/app/page";
 
 // TODO: Maybe have a choice of how often you contribute to an account
 
-// Fix hydration errors
-
 // TODO: Add tax rate to accounts, maybe add account type and roth accounts will not have tax field
-
-// TODO: We need a way to get current age and retirement age to get the xAxis
-// TODO: This should probably be in the section that will get other info like salary so we can do stuff like % of income saved
 
 // TODO: We want to do calculations for after retirement too
 
 // make graphs better fit their box
-
-// add more ticks to y axis
 
 const GraphSection = ({ children, ...props }: Props) => {
   const xAxisGenerator = (currentAge: number, retirementAge: number) => {
@@ -122,26 +115,25 @@ const GraphSection = ({ children, ...props }: Props) => {
   };
 
   return (
-    <div style={{ height: "300px", marginTop: "20px" }}>
-      <LineChart
-        series={(getDataForAllAccounts(65 - 24) || []).map((series) => ({
-          ...series,
-          valueFormatter: (value) =>
-            value !== null ? "$" + getShorthandForBigNumbers(value) : "",
-        }))}
-        xAxis={[{ data: xAxisGenerator(24, 65), label: "Year" }]}
-        yAxis={[
-          {
-            label: "Balance ($)",
-            width: 80,
-            valueFormatter: (balance: number) =>
-              getShorthandForBigNumbers(balance),
-          },
-        ]}
-        height={200}
-        margin={0}
-      />
-    </div>
+    <LineChart
+      series={(getDataForAllAccounts(65 - 24) || []).map((series) => ({
+        ...series,
+        valueFormatter: (value) =>
+          value !== null ? "$" + getShorthandForBigNumbers(value) : "",
+      }))}
+      xAxis={[{ data: xAxisGenerator(24, 65), label: "Year" }]}
+      yAxis={[
+        {
+          label: "Balance ($)",
+          width: 80,
+          tickNumber: 4,
+          valueFormatter: (balance: number) =>
+            getShorthandForBigNumbers(balance),
+        },
+      ]}
+      margin={0}
+      sx={{ marginTop: "20px" }}
+    />
   );
 };
 

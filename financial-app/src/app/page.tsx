@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import AddAccountModal from "./Components/AddAccountModal/AddAccountModal";
 import GraphSection from "./Components/GraphSection/GraphSection";
+import DetailsSection from "./Components/DetailsSection/DetailsSection";
 
 export interface Account {
   name?: string;
@@ -120,38 +121,41 @@ const Home = () => {
               ))}
             </CardContent>
           </Card>
-
           <Box
             sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}
           >
-            <Card sx={{ flex: 1 }}>
-              <CardContent>
-                <Typography variant="h6">Individual Accounts</Typography>
-                <GraphSection accounts={accounts} mode="individual accounts" />
-              </CardContent>
-            </Card>
-            <Card sx={{ flex: 1 }}>
-              <CardContent>
-                <Typography variant="h6">Details / Info</Typography>
-                <div>More insights or secondary charts can go here.</div>
-              </CardContent>
-            </Card>
-          </Box>
-          <Box
-            sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}
-          >
-            <Card sx={{ flex: 1 }}>
-              <CardContent>
-                <Typography variant="h6">Net Worth</Typography>
-                <GraphSection accounts={accounts} mode="net worth" />
-              </CardContent>
-            </Card>
-            <Card sx={{ flex: 1 }}>
-              <CardContent>
-                <Typography variant="h6">Details / Info</Typography>
-                <div>More insights or secondary charts can go here.</div>
-              </CardContent>
-            </Card>
+            <Box
+              sx={{ flex: 1, display: "flex", flexDirection: "row", gap: 2 }}
+            >
+              <Card sx={{ flex: 1 }}>
+                <DetailsSection />
+              </Card>
+            </Box>
+            <Box
+              sx={{ flex: 1, display: "flex", flexDirection: "row", gap: 2 }}
+            >
+              <Card sx={{ flex: 1 }}>
+                <CardContent>
+                  <Typography variant="h6">Individual Accounts</Typography>
+                  <GraphSection
+                    accounts={accounts}
+                    mode="individual accounts"
+                  />
+                </CardContent>
+              </Card>
+              <Card sx={{ flex: 1 }}>
+                <CardContent>
+                  <Typography variant="h6">Net Worth</Typography>
+                  <GraphSection accounts={accounts} mode="net worth" />
+                </CardContent>
+              </Card>
+            </Box>
+            <Box
+              sx={{ flex: 1, display: "flex", flexDirection: "row", gap: 2 }}
+            >
+              <Card sx={{ flex: 1 }}></Card>
+              <Card sx={{ flex: 1 }}></Card>
+            </Box>
           </Box>
         </Box>
       </Box>
