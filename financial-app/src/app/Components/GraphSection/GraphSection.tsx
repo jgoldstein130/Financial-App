@@ -13,7 +13,7 @@ import { Account } from "@/app/page";
 const GraphSection = ({ children, ...props }: Props) => {
   const xAxisGenerator = (currentAge: number, retirementAge: number) => {
     const xAxis: number[] = [];
-    for (let i = 0; i <= retirementAge - currentAge; i++) {
+    for (let i = currentAge; i <= retirementAge + 1; i++) {
       xAxis.push(i);
     }
     return xAxis;
@@ -67,7 +67,6 @@ const GraphSection = ({ children, ...props }: Props) => {
     );
 
     const monthlyInterest = annualInterest / 12;
-    numYears -= 1;
     const numMonths = numYears * 12;
 
     let balanceEveryMonthyStartingBalance: number[] = [startingBalance];
@@ -114,14 +113,22 @@ const GraphSection = ({ children, ...props }: Props) => {
     }
   };
 
-  return (
+  return props.retirementAge > props.currentAge &&
+    props.retirementAge - props.currentAge < 200 ? (
     <LineChart
-      series={(getDataForAllAccounts(65 - 24) || []).map((series) => ({
+      series={(
+        getDataForAllAccounts(props.retirementAge - props.currentAge) || []
+      ).map((series) => ({
         ...series,
         valueFormatter: (value) =>
           value !== null ? "$" + getShorthandForBigNumbers(value) : "",
       }))}
-      xAxis={[{ data: xAxisGenerator(24, 65), label: "Year" }]}
+      xAxis={[
+        {
+          data: xAxisGenerator(props.currentAge, props.retirementAge),
+          label: "Age",
+        },
+      ]}
       yAxis={[
         {
           label: "Balance ($)",
@@ -132,8 +139,10 @@ const GraphSection = ({ children, ...props }: Props) => {
         },
       ]}
       margin={0}
-      sx={{ marginTop: "20px" }}
+      height={300}
     />
+  ) : (
+    <></>
   );
 };
 
@@ -141,6 +150,8 @@ interface Props {
   children?: ReactNode;
   accounts: Account[];
   mode: "individual accounts" | "net worth";
+  currentAge: number;
+  retirementAge: number;
 }
 
 export default GraphSection;

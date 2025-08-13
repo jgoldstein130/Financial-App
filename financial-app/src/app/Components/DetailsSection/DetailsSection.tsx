@@ -15,8 +15,19 @@ const DetailsSection = ({ children, ...props }: Props) => {
           mt: 2,
         }}
       >
-        <TextField label="Age" variant="outlined" type="number" fullWidth />
-        <TextField label="Retirement Age" variant="outlined" fullWidth />
+        <TextField
+          label="Age"
+          variant="outlined"
+          type="number"
+          fullWidth
+          onChange={(e) => props.setCurrentAge(Number(e.target.value))}
+        />
+        <TextField
+          label="Retirement Age"
+          variant="outlined"
+          fullWidth
+          onChange={(e) => props.setRetirementAge(Number(e.target.value))}
+        />
         <TextField label="Salary" variant="outlined" fullWidth />
       </Box>
     </CardContent>
@@ -25,6 +36,8 @@ const DetailsSection = ({ children, ...props }: Props) => {
 
 interface Props {
   children?: ReactNode;
+  setCurrentAge: (age: number) => void;
+  setRetirementAge: (age: number) => void;
 }
 
 export default DetailsSection;

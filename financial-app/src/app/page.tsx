@@ -23,6 +23,8 @@ const Home = () => {
   const [expandedAccount, setExpandedAccount] = useState<string>("");
   const [isAddAccountModalOpened, setIsAddAccountModalOpened] =
     useState<boolean>(false);
+  const [currentAge, setCurrentAge] = useState<number>(18);
+  const [retirementAge, setRetirementAge] = useState<number>(65);
 
   const openAddAccountModal = () => {
     setIsAddAccountModalOpened(true);
@@ -78,85 +80,129 @@ const Home = () => {
           sx={{
             display: "flex",
             flex: 1,
-            overflow: "hidden",
+            overflowY: "auto",
             padding: "16px",
             gap: 2,
           }}
         >
-          <Card
-            sx={{
-              width: "30%",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <CardContent sx={{ flex: "0 0 auto" }}>
-              <button
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-md"
-                onClick={openAddAccountModal}
-              >
-                Add Account
-              </button>
-            </CardContent>
-            <CardContent
+          <div className="flex flex-col gap-4 flex-1">
+            <Card
+              className="h-full"
               sx={{
-                flex: 1,
-                overflowY: "auto",
-                paddingTop: "10px",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
-              {accounts.map((account) => (
-                <div
-                  key={account.name + "-" + account.id}
-                  style={{ marginBottom: "8px" }}
+              <CardContent
+                sx={{
+                  flex: 1,
+                  overflowY: "auto",
+                  paddingTop: "10px",
+                }}
+              >
+                <button
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-md my-4 w-full"
+                  onClick={openAddAccountModal}
                 >
-                  <AccountAccordion
-                    account={account}
-                    updateAccount={updateAccount}
-                    deleteAccount={deleteAccount}
-                    expandedAccount={expandedAccount}
-                    setExpandedAccount={setExpandedAccount}
-                  />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-          <Box
-            sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}
+                  Add Account
+                </button>
+                {accounts.map((account) => (
+                  <div
+                    key={account.name + "-" + account.id}
+                    style={{ marginBottom: "8px" }}
+                  >
+                    <AccountAccordion
+                      account={account}
+                      updateAccount={updateAccount}
+                      deleteAccount={deleteAccount}
+                      expandedAccount={expandedAccount}
+                      setExpandedAccount={setExpandedAccount}
+                    />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+            <Card
+              className="h-full"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            ></Card>
+          </div>
+          <div
+            style={{
+              flex: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+            }}
           >
-            <Box
-              sx={{ flex: 1, display: "flex", flexDirection: "row", gap: 2 }}
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "row",
+              }}
             >
               <Card sx={{ flex: 1 }}>
-                <DetailsSection />
+                <DetailsSection
+                  setCurrentAge={(currentAge: number) =>
+                    setCurrentAge(currentAge)
+                  }
+                  setRetirementAge={(retirementAge: number) =>
+                    setRetirementAge(retirementAge)
+                  }
+                />
               </Card>
-            </Box>
-            <Box
-              sx={{ flex: 1, display: "flex", flexDirection: "row", gap: 2 }}
+            </div>
+            <div
+              style={{
+                flex: 1.5,
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+              }}
             >
               <Card sx={{ flex: 1 }}>
-                <CardContent>
+                <CardContent className="flex flex-col">
                   <Typography variant="h6">Individual Accounts</Typography>
                   <GraphSection
                     accounts={accounts}
                     mode="individual accounts"
+                    currentAge={currentAge}
+                    retirementAge={retirementAge}
                   />
                 </CardContent>
               </Card>
               <Card sx={{ flex: 1 }}>
-                <CardContent>
+                <CardContent className="flex flex-col">
                   <Typography variant="h6">Net Worth</Typography>
-                  <GraphSection accounts={accounts} mode="net worth" />
+                  <GraphSection
+                    accounts={accounts}
+                    mode="net worth"
+                    currentAge={currentAge}
+                    retirementAge={retirementAge}
+                  />
                 </CardContent>
               </Card>
-            </Box>
-            <Box
-              sx={{ flex: 1, display: "flex", flexDirection: "row", gap: 2 }}
+            </div>
+            <div
+              style={{
+                flex: 1.5,
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+              }}
             >
-              <Card sx={{ flex: 1 }}></Card>
-              <Card sx={{ flex: 1 }}></Card>
-            </Box>
-          </Box>
+              <Card sx={{ flex: 1 }}>
+                <CardContent className="flex flex-col"></CardContent>
+              </Card>
+              <Card sx={{ flex: 1 }}>
+                <CardContent className="flex flex-col"></CardContent>
+              </Card>
+            </div>
+          </div>
         </Box>
       </Box>
     </>
