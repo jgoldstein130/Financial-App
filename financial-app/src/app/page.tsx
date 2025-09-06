@@ -10,6 +10,7 @@ import AddAccountModal from "./Components/AddAccountModal/AddAccountModal";
 import GraphSection from "./Components/GraphSection/GraphSection";
 import DetailsSection from "./Components/DetailsSection/DetailsSection";
 import IncomeBreakdown from "./Components/IncomeBreakdown/IncomeBreakdown";
+import BudgetSection from "./Components/BudgetSection/BudgetSection";
 
 export interface Account {
   name?: string;
@@ -187,6 +188,7 @@ const Home = () => {
               <Card sx={{ flex: 1 }}>
                 <CardContent className="flex flex-col">
                   <Typography variant="h6">Budget</Typography>
+                  <BudgetSection />
                 </CardContent>
               </Card>
               <Card sx={{ flex: 1 }}>
