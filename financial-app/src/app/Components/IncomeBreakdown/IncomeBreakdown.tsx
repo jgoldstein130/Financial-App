@@ -52,7 +52,7 @@ const testData = {
 const IncomeBreakdown = ({ children, ...props }: Props) => {
   const [filingStatus, setFilingStatus] = useState("single");
   const [federalTaxData, setFederalTaxData] = useState<TaxData>();
-  const [stateTaxRate, setStateTaxRate] = useState<number>();
+  const [stateTaxRate, setStateTaxRate] = useState<string>("");
   const [showTaxDetails, setShowTaxDetails] = useState(false);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
       income -= federalTaxData.federal_taxes_owed;
       income -= federalTaxData.fica_total;
       if (stateTaxRate) {
-        income -= (props.salary * stateTaxRate) / 100;
+        income -= (props.salary * Number(stateTaxRate)) / 100;
       }
       return income;
     }
@@ -103,7 +103,7 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
           value={stateTaxRate}
           label="State Income Tax Rate"
           variant="outlined"
-          onChange={(e) => setStateTaxRate(Number(e.target.value))}
+          onChange={(e) => setStateTaxRate(e.target.value)}
         />
         <a
           href="https://taxfoundation.org/data/all/state/state-income-tax-rates/"
@@ -142,7 +142,10 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
                     {
                       value: stateTaxRate
                         ? Number(
-                            ((props.salary * stateTaxRate) / 100).toFixed(2)
+                            (
+                              (props.salary * Number(stateTaxRate)) /
+                              100
+                            ).toFixed(2)
                           )
                         : 0,
                       label: "State Income Tax",
@@ -178,7 +181,9 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
                 <p>
                   State Income Tax: $
                   {stateTaxRate
-                    ? Number((props.salary * stateTaxRate) / 100).toFixed(2)
+                    ? Number(
+                        (props.salary * Number(stateTaxRate)) / 100
+                      ).toFixed(2)
                     : 0}
                 </p>
               </div>
