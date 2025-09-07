@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import {
   CardContent,
   Paper,
@@ -13,9 +13,10 @@ import BudgetCategoriesModal from "../BudgetCategoriesModal/BudgetCategoriesModa
 import { FaPlusSquare } from "react-icons/fa";
 import { TiDelete } from "react-icons/ti";
 import { v4 as uuid } from "uuid";
+import { ConfirmModalContext } from "@/app/Contexts/ConfirmModalContext";
 
 interface budgetItem {
-  key: string;
+  id: string;
   name: string;
   cost: number;
   frequency: string;
@@ -23,16 +24,16 @@ interface budgetItem {
 }
 
 const BudgetSection = ({ children, ...props }: Props) => {
-  const [items, setItems] = useState<budgetItem[]>([
+  const [budgetItems, setBudgetItems] = useState<budgetItem[]>([
     {
-      key: uuid(),
+      id: uuid(),
       name: "car",
       cost: 300,
       frequency: "monthly",
       category: "car",
     },
     {
-      key: uuid(),
+      id: uuid(),
       name: "rent",
       cost: 1409,
       frequency: "monthly",
@@ -44,6 +45,11 @@ const BudgetSection = ({ children, ...props }: Props) => {
     useState<Map<string, string>>();
   const [isBudgetCategoriesModalOpen, setIsBudgetCategoriesModalOpen] =
     useState<boolean>(false);
+  const {
+    setIsConfirmModalOpen,
+    setConfirmModalTitle,
+    setConfirmModalFunction,
+  } = useContext(ConfirmModalContext);
 
   const addCategory = (category: string) => {
     setCategories((prevCategories) => [...prevCategories, category]);
@@ -52,6 +58,16 @@ const BudgetSection = ({ children, ...props }: Props) => {
   const removeCategory = (category: string) => {
     const newCategories = categories.filter((x) => x !== category);
     setCategories(newCategories);
+  };
+
+  const removeBudgetItem = (id: string) => {
+    setConfirmModalFunction(() => () => {
+      setBudgetItems((prevItems) => [
+        ...prevItems.filter((item) => item.id !== id),
+      ]);
+    });
+    setConfirmModalTitle("Are You Sure You Want To Delete This Budget Item?");
+    setIsConfirmModalOpen(true);
   };
 
   return (
@@ -91,7 +107,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.map((item) => (
+            {budgetItems.map((item) => (
               <TableRow key={item.name}>
                 <TableCell component="th" scope="row">
                   {item.name}
@@ -105,7 +121,11 @@ const BudgetSection = ({ children, ...props }: Props) => {
                   {item.category}
                 </TableCell>
                 <TableCell align="right">
-                  <TiDelete color="#ad151c" size={30} />
+                  <TiDelete
+                    color="#ad151c"
+                    size={30}
+                    onClick={() => removeBudgetItem(item.id)}
+                  />
                 </TableCell>
               </TableRow>
             ))}
