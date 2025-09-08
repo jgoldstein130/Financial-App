@@ -1,5 +1,6 @@
 import { ReactNode, useContext, useState } from "react";
 import {
+  Button,
   CardContent,
   Paper,
   Table,
@@ -8,6 +9,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@mui/material";
 import BudgetCategoriesModal from "../BudgetCategoriesModal/BudgetCategoriesModal";
 import { FaPlusSquare } from "react-icons/fa";
@@ -15,7 +17,7 @@ import { TiDelete } from "react-icons/ti";
 import { v4 as uuid } from "uuid";
 import { ConfirmModalContext } from "@/app/Contexts/ConfirmModalContext";
 
-interface budgetItem {
+interface BudgetItem {
   id: string;
   name: string;
   cost: number;
@@ -24,7 +26,7 @@ interface budgetItem {
 }
 
 const BudgetSection = ({ children, ...props }: Props) => {
-  const [budgetItems, setBudgetItems] = useState<budgetItem[]>([
+  const [budgetItems, setBudgetItems] = useState<BudgetItem[]>([
     {
       id: uuid(),
       name: "car",
@@ -41,15 +43,9 @@ const BudgetSection = ({ children, ...props }: Props) => {
     },
   ]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [categoryToColorMap, setCategoryToColorMap] =
-    useState<Map<string, string>>();
-  const [isBudgetCategoriesModalOpen, setIsBudgetCategoriesModalOpen] =
-    useState<boolean>(false);
-  const {
-    setIsConfirmModalOpen,
-    setConfirmModalTitle,
-    setConfirmModalFunction,
-  } = useContext(ConfirmModalContext);
+  const [categoryToColorMap, setCategoryToColorMap] = useState<Map<string, string>>();
+  const [isBudgetCategoriesModalOpen, setIsBudgetCategoriesModalOpen] = useState<boolean>(false);
+  const { setIsConfirmModalOpen, setConfirmModalTitle, setConfirmModalFunction } = useContext(ConfirmModalContext);
 
   const addCategory = (category: string) => {
     setCategories((prevCategories) => [...prevCategories, category]);
@@ -60,14 +56,27 @@ const BudgetSection = ({ children, ...props }: Props) => {
     setCategories(newCategories);
   };
 
-  const removeBudgetItem = (id: string) => {
+  const removeBudgetItem = (id: string, name: string) => {
     setConfirmModalFunction(() => () => {
-      setBudgetItems((prevItems) => [
-        ...prevItems.filter((item) => item.id !== id),
-      ]);
+      setBudgetItems((prevItems) => [...prevItems.filter((item) => item.id !== id)]);
     });
-    setConfirmModalTitle("Are You Sure You Want To Delete This Budget Item?");
+    setConfirmModalTitle(`Are You Sure You Want To Delete The Budget Item "${name}"?`);
     setIsConfirmModalOpen(true);
+  };
+
+  const addBudgetItem = () => {
+    const newBudgetItems = [...budgetItems];
+    newBudgetItems.push({ id: uuid(), name: "", cost: 0, frequency: "monthly", category: "" });
+    setBudgetItems(newBudgetItems);
+  };
+
+  const updateBudgetItem = (id: string, typeOfUpdate: keyof BudgetItem, newValue: string) => {
+    const newBudgetItems = [...budgetItems];
+    const index = newBudgetItems.findIndex((item) => item.id === id);
+    if (index !== -1) {
+      (newBudgetItems[index][typeOfUpdate] as any) = newValue;
+      setBudgetItems(newBudgetItems);
+    }
   };
 
   return (
@@ -96,11 +105,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
                   }}
                 >
                   Category
-                  <FaPlusSquare
-                    size={20}
-                    color="green"
-                    onClick={() => setIsBudgetCategoriesModalOpen(true)}
-                  />
+                  <FaPlusSquare size={20} color="green" onClick={() => setIsBudgetCategoriesModalOpen(true)} />
                 </div>
               </TableCell>
               <TableCell align="right"></TableCell>
@@ -108,30 +113,36 @@ const BudgetSection = ({ children, ...props }: Props) => {
           </TableHead>
           <TableBody>
             {budgetItems.map((item) => (
-              <TableRow key={item.name}>
+              <TableRow key={item.id}>
                 <TableCell component="th" scope="row">
-                  {item.name}
+                  <TextField
+                    value={item.name}
+                    variant="standard"
+                    onChange={(e) => updateBudgetItem(item.id, "name", e.target.value)}
+                  ></TextField>
                 </TableCell>
-                <TableCell align="right">{item.cost}</TableCell>
+                <TableCell align="right">
+                  <TextField
+                    value={item.cost}
+                    variant="standard"
+                    onChange={(e) => updateBudgetItem(item.id, "cost", e.target.value)}
+                  ></TextField>
+                </TableCell>
                 <TableCell align="right">{item.frequency}</TableCell>
-                <TableCell
-                  align="center"
-                  sx={{ backgroundColor: categoryToColorMap?.get(item.name) }}
-                >
+                <TableCell align="center" sx={{ backgroundColor: categoryToColorMap?.get(item.name) }}>
                   {item.category}
                 </TableCell>
                 <TableCell align="right">
-                  <TiDelete
-                    color="#ad151c"
-                    size={30}
-                    onClick={() => removeBudgetItem(item.id)}
-                  />
+                  <TiDelete color="#ad151c" size={30} onClick={() => removeBudgetItem(item.id, item.name)} />
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Button variant="contained" onClick={addBudgetItem}>
+        Add Budget Item
+      </Button>
     </CardContent>
   );
 };
