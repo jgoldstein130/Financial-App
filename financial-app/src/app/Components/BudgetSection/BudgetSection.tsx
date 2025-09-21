@@ -2,7 +2,11 @@ import { ReactNode, useContext, useState } from "react";
 import {
   Button,
   CardContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -25,6 +29,11 @@ interface BudgetItem {
   category: string;
 }
 
+export interface Category {
+  categoryName: string;
+  color: string;
+}
+
 const BudgetSection = ({ children, ...props }: Props) => {
   const [budgetItems, setBudgetItems] = useState<BudgetItem[]>([
     {
@@ -42,18 +51,73 @@ const BudgetSection = ({ children, ...props }: Props) => {
       category: "rent",
     },
   ]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [categoryToColorMap, setCategoryToColorMap] = useState<Map<string, string>>();
+  const [categories, setCategories] = useState<Map<string, Category>>(new Map());
   const [isBudgetCategoriesModalOpen, setIsBudgetCategoriesModalOpen] = useState<boolean>(false);
   const { setIsConfirmModalOpen, setConfirmModalTitle, setConfirmModalFunction } = useContext(ConfirmModalContext);
 
-  const addCategory = (category: string) => {
-    setCategories((prevCategories) => [...prevCategories, category]);
+  const addCategory = (categoryName: string, color: string) => {
+    const newCategories = new Map(categories);
+    let newCategoryName = categoryName;
+    const currentCategoryNames = new Set(newCategories.values().map((category) => category.categoryName));
+    let i = 1;
+    while (currentCategoryNames.has(newCategoryName)) {
+      newCategoryName = newCategoryName + "-" + i;
+      i++;
+    }
+    const categoryKey = newCategoryName + uuid();
+    newCategories.set(categoryKey, { categoryName: newCategoryName, color: color });
+    setCategories(newCategories);
   };
 
-  const removeCategory = (category: string) => {
-    const newCategories = categories.filter((x) => x !== category);
+  const removeCategory = (categoryKey: string) => {
+    const newCategories = new Map(categories);
+    newCategories.delete(categoryKey);
     setCategories(newCategories);
+  };
+
+  const updateCategoryColor = (categoryKey: string, color: string) => {
+    const newCategories = new Map(categories);
+    const newCategory = newCategories.get(categoryKey);
+    if (newCategory) {
+      newCategory.color = color;
+      newCategories.set(categoryKey, newCategory);
+    }
+    setCategories(newCategories);
+  };
+
+  const updateCategoryName = (categoryKey: string, categoryName: string) => {
+    const newCategories = new Map(categories);
+    const newCategory = newCategories.get(categoryKey);
+    let newCategoryName;
+    if (newCategory) {
+      newCategoryName = categoryName;
+      newCategory.categoryName = newCategoryName;
+      newCategories.set(categoryKey, newCategory);
+    }
+    setCategories(newCategories);
+  };
+
+  const makeCategoryNameUnique = (categoryKey: string) => {
+    const newCategories = new Map(categories);
+    const newCategory = newCategories.get(categoryKey);
+    const currentCategoryNames = [...newCategories.values().map((category) => category.categoryName)];
+    if (newCategory) {
+      let newCategoryName = newCategory.categoryName;
+      let i = 1;
+      while (currentCategoryNames.filter((categoryName) => categoryName === newCategoryName).length > 1) {
+        newCategoryName = newCategory.categoryName + "-" + i;
+        i++;
+      }
+      newCategory.categoryName = newCategoryName;
+      newCategories.set(categoryKey, newCategory);
+    }
+    setCategories(newCategories);
+  };
+
+  const getCategoryColorFromName = (categoryName: string) => {
+    const categoryValues = [...categories.values()];
+    const correctCategory = categoryValues.filter((category) => category.categoryName === categoryName)[0];
+    return correctCategory ? correctCategory.color : "white";
   };
 
   const removeBudgetItem = (id: string, name: string) => {
@@ -87,28 +151,31 @@ const BudgetSection = ({ children, ...props }: Props) => {
         categories={categories}
         addCategory={addCategory}
         removeCategory={removeCategory}
+        updateCategoryColor={updateCategoryColor}
+        updateCategoryName={updateCategoryName}
+        makeCategoryNameUnique={makeCategoryNameUnique}
       />
-      <TableContainer component={Paper} sx={{ width: 500 }}>
+      <TableContainer component={Paper} className="w-full">
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Item</TableCell>
-              <TableCell align="right">Cost</TableCell>
-              <TableCell align="right">Frequency</TableCell>
-              <TableCell align="right">
+              <TableCell align="left">Cost</TableCell>
+              <TableCell align="left">Frequency</TableCell>
+              <TableCell align="left">
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "10px",
-                    justifyContent: "flex-end",
+                    justifyContent: "flex-start",
                   }}
                 >
                   Category
                   <FaPlusSquare size={20} color="green" onClick={() => setIsBudgetCategoriesModalOpen(true)} />
                 </div>
               </TableCell>
-              <TableCell align="right"></TableCell>
+              <TableCell align="left"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -121,18 +188,35 @@ const BudgetSection = ({ children, ...props }: Props) => {
                     onChange={(e) => updateBudgetItem(item.id, "name", e.target.value)}
                   ></TextField>
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="left">
                   <TextField
                     value={item.cost}
                     variant="standard"
                     onChange={(e) => updateBudgetItem(item.id, "cost", e.target.value)}
                   ></TextField>
                 </TableCell>
-                <TableCell align="right">{item.frequency}</TableCell>
-                <TableCell align="center" sx={{ backgroundColor: categoryToColorMap?.get(item.name) }}>
-                  {item.category}
+                <TableCell align="left">{item.frequency}</TableCell>
+                <TableCell
+                  align="left"
+                  sx={{
+                    backgroundColor: getCategoryColorFromName(item.category),
+                    maxWidth: "200px",
+                    minWidth: "200px",
+                  }}
+                >
+                  <FormControl fullWidth>
+                    {!item.category && <InputLabel>Category</InputLabel>}
+                    <Select
+                      value={item.category}
+                      onChange={(e) => updateBudgetItem(item.id, "category", e.target.value)}
+                    >
+                      {[...categories.values()].map((category) => (
+                        <MenuItem value={category.categoryName}>{category.categoryName}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="left">
                   <TiDelete color="#ad151c" size={30} onClick={() => removeBudgetItem(item.id, item.name)} />
                 </TableCell>
               </TableRow>
