@@ -42,17 +42,31 @@ const BudgetSection = ({ children, ...props }: Props) => {
       category: "rent",
     },
   ]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [categoryToColorMap, setCategoryToColorMap] = useState<Map<string, string>>();
+  const [categories, setCategories] = useState<Map<string, string>>(new Map());
   const [isBudgetCategoriesModalOpen, setIsBudgetCategoriesModalOpen] = useState<boolean>(false);
   const { setIsConfirmModalOpen, setConfirmModalTitle, setConfirmModalFunction } = useContext(ConfirmModalContext);
 
-  const addCategory = (category: string) => {
-    setCategories((prevCategories) => [...prevCategories, category]);
+  const addCategory = (category: string, color: string) => {
+    const newCategories = new Map(categories);
+    let categoryName = category;
+    let i = 1;
+    while (newCategories.has(categoryName)) {
+      categoryName = category + "-" + i;
+      i++;
+    }
+    newCategories.set(categoryName, color);
+    setCategories(newCategories);
   };
 
   const removeCategory = (category: string) => {
-    const newCategories = categories.filter((x) => x !== category);
+    const newCategories = new Map(categories);
+    newCategories.delete(category);
+    setCategories(newCategories);
+  };
+
+  const updateCategoryColor = (categoryName: string, color: string) => {
+    const newCategories = new Map(categories);
+    newCategories.set(categoryName, color);
     setCategories(newCategories);
   };
 
@@ -87,6 +101,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
         categories={categories}
         addCategory={addCategory}
         removeCategory={removeCategory}
+        updateCategoryColor={updateCategoryColor}
       />
       <TableContainer component={Paper} sx={{ width: 500 }}>
         <Table aria-label="simple table">
@@ -129,7 +144,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
                   ></TextField>
                 </TableCell>
                 <TableCell align="right">{item.frequency}</TableCell>
-                <TableCell align="center" sx={{ backgroundColor: categoryToColorMap?.get(item.name) }}>
+                <TableCell align="center" sx={{ backgroundColor: categories?.get(item.category) }}>
                   {item.category}
                 </TableCell>
                 <TableCell align="right">
