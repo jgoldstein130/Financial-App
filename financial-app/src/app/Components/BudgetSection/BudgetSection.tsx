@@ -17,9 +17,9 @@ import {
 } from "@mui/material";
 import BudgetCategoriesModal from "../BudgetCategoriesModal/BudgetCategoriesModal";
 import { FaPlusSquare } from "react-icons/fa";
-import { TiDelete } from "react-icons/ti";
 import { v4 as uuid } from "uuid";
 import { ConfirmModalContext } from "@/app/Contexts/ConfirmModalContext";
+import DeleteButton from "../DeleteButton/DeleteButton";
 
 interface BudgetItem {
   id: string;
@@ -35,24 +35,10 @@ export interface Category {
 }
 
 const BudgetSection = ({ children, ...props }: Props) => {
-  const [budgetItems, setBudgetItems] = useState<BudgetItem[]>([
-    {
-      id: uuid(),
-      name: "car",
-      cost: 300,
-      frequency: "monthly",
-      category: "car",
-    },
-    {
-      id: uuid(),
-      name: "rent",
-      cost: 1409,
-      frequency: "monthly",
-      category: "rent",
-    },
-  ]);
+  const [budgetItems, setBudgetItems] = useState<BudgetItem[]>([]);
   const [categories, setCategories] = useState<Map<string, Category>>(new Map());
   const [isBudgetCategoriesModalOpen, setIsBudgetCategoriesModalOpen] = useState<boolean>(false);
+  const [frequencyOptions, setFrequencyOptions] = useState<string[]>(["Monthly", "Yearly"]);
   const { setIsConfirmModalOpen, setConfirmModalTitle, setConfirmModalFunction } = useContext(ConfirmModalContext);
 
   const addCategory = (categoryName: string, color: string) => {
@@ -71,8 +57,17 @@ const BudgetSection = ({ children, ...props }: Props) => {
 
   const removeCategory = (categoryKey: string) => {
     const newCategories = new Map(categories);
+    const categoryName = newCategories.get(categoryKey)?.categoryName;
     newCategories.delete(categoryKey);
     setCategories(newCategories);
+
+    const newBudgetItems = [...budgetItems];
+    for (let i = 0; i < newBudgetItems.length; i++) {
+      if (newBudgetItems[i].category === categoryName) {
+        newBudgetItems[i].category = "";
+      }
+    }
+    setBudgetItems(newBudgetItems);
   };
 
   const updateCategoryColor = (categoryKey: string, color: string) => {
@@ -130,7 +125,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
 
   const addBudgetItem = () => {
     const newBudgetItems = [...budgetItems];
-    newBudgetItems.push({ id: uuid(), name: "", cost: 0, frequency: "monthly", category: "" });
+    newBudgetItems.push({ id: uuid(), name: "", cost: 0, frequency: "", category: "" });
     setBudgetItems(newBudgetItems);
   };
 
@@ -195,7 +190,26 @@ const BudgetSection = ({ children, ...props }: Props) => {
                     onChange={(e) => updateBudgetItem(item.id, "cost", e.target.value)}
                   ></TextField>
                 </TableCell>
-                <TableCell align="left">{item.frequency}</TableCell>
+                <TableCell
+                  align="left"
+                  sx={{
+                    maxWidth: "150px",
+                    minWidth: "150px",
+                  }}
+                >
+                  <FormControl fullWidth>
+                    {!item.frequency && <InputLabel>Frequency</InputLabel>}
+                    <Select
+                      value={item.frequency}
+                      onChange={(e) => updateBudgetItem(item.id, "frequency", e.target.value)}
+                    >
+                      <MenuItem value={""}>Select Frequency</MenuItem>
+                      {frequencyOptions.map((frequencyOption) => (
+                        <MenuItem value={frequencyOption}>{frequencyOption}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </TableCell>
                 <TableCell
                   align="left"
                   sx={{
@@ -210,6 +224,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
                       value={item.category}
                       onChange={(e) => updateBudgetItem(item.id, "category", e.target.value)}
                     >
+                      <MenuItem value={""}>Select Category</MenuItem>
                       {[...categories.values()].map((category) => (
                         <MenuItem value={category.categoryName}>{category.categoryName}</MenuItem>
                       ))}
@@ -217,7 +232,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
                   </FormControl>
                 </TableCell>
                 <TableCell align="left">
-                  <TiDelete color="#ad151c" size={30} onClick={() => removeBudgetItem(item.id, item.name)} />
+                  <DeleteButton onClick={() => removeBudgetItem(item.id, item.name)} />
                 </TableCell>
               </TableRow>
             ))}

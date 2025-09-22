@@ -24,7 +24,7 @@ const DetailsSection = ({ children, ...props }: Props) => {
   return (
     <CardContent>
       <Typography variant="h6" gutterBottom>
-        Details / Info
+        <b>Details / Info</b>
       </Typography>
       <div className="flex gap-4">
         <Box

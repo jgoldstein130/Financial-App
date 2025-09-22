@@ -4,15 +4,15 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import AccountAccordion from "./Components/AccountAccordion/AccountAccordion";
 import { v4 as uuid } from "uuid";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { Typography } from "@mui/material";
 import AddAccountModal from "./Components/AddAccountModal/AddAccountModal";
 import GraphSection from "./Components/GraphSection/GraphSection";
 import DetailsSection from "./Components/DetailsSection/DetailsSection";
 import IncomeBreakdown from "./Components/IncomeBreakdown/IncomeBreakdown";
 import BudgetSection from "./Components/BudgetSection/BudgetSection";
-import { ConfirmModalContext } from "./Contexts/ConfirmModalContext";
 import ConfirmModal from "./Components/ConfirmModal/ConfirmModal";
+import NavigationBar from "./Components/NavigationBar/NavigationBar";
 
 export interface Account {
   name?: string;
@@ -25,14 +25,11 @@ export interface Account {
 const App = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [expandedAccount, setExpandedAccount] = useState<string>("");
-  const [isAddAccountModalOpened, setIsAddAccountModalOpened] =
-    useState<boolean>(false);
+  const [isAddAccountModalOpened, setIsAddAccountModalOpened] = useState<boolean>(false);
   const [currentAge, setCurrentAge] = useState<number>(18);
   const [retirementAge, setRetirementAge] = useState<number>(65);
   const [salary, setSalary] = useState<number>(0);
   const [taxRate, setTaxRate] = useState<number>(0);
-  const { isConfirmModalOpen, setIsConfirmModalOpen } =
-    useContext(ConfirmModalContext);
 
   const openAddAccountModal = () => {
     setIsAddAccountModalOpened(true);
@@ -45,17 +42,11 @@ const App = () => {
   };
 
   const updateAccount = (id: string, updatedAccount: Account) => {
-    setAccounts((prevAccounts) =>
-      prevAccounts.map((account) =>
-        account.id === id ? updatedAccount : account
-      )
-    );
+    setAccounts((prevAccounts) => prevAccounts.map((account) => (account.id === id ? updatedAccount : account)));
   };
 
   const deleteAccount = (id: string) => {
-    setAccounts((prevAccounts) =>
-      prevAccounts.filter((account) => account.id !== id)
-    );
+    setAccounts((prevAccounts) => prevAccounts.filter((account) => account.id !== id));
   };
 
   return (
@@ -71,22 +62,18 @@ const App = () => {
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
           height: "100vh",
           backgroundColor: "#f0f2f5",
         }}
       >
-        <div className="p-4 bg-[#1976d2] text-white flex justify-between">
-          <Typography variant="h5">Dashboard</Typography>
-          <Typography variant="h5">Login</Typography>
-        </div>
+        <NavigationBar balance={30500} />
         <div
           style={{
             display: "flex",
             flex: 1,
             overflowY: "auto",
-            padding: "16px",
-            gap: 2,
+            padding: "30px",
+            gap: 30,
           }}
         >
           <div
@@ -94,7 +81,7 @@ const App = () => {
               flex: 3,
               display: "flex",
               flexDirection: "column",
-              gap: 10,
+              gap: 30,
             }}
           >
             <div
@@ -102,32 +89,32 @@ const App = () => {
                 flex: 1,
                 display: "flex",
                 flexDirection: "row",
+                backgroundColor: "white",
+                borderRadius: "10px",
               }}
             >
-              <Card sx={{ flex: 1 }}>
+              <div style={{ flex: 1 }}>
                 <DetailsSection
-                  setCurrentAge={(currentAge: number) =>
-                    setCurrentAge(currentAge)
-                  }
-                  setRetirementAge={(retirementAge: number) =>
-                    setRetirementAge(retirementAge)
-                  }
+                  setCurrentAge={(currentAge: number) => setCurrentAge(currentAge)}
+                  setRetirementAge={(retirementAge: number) => setRetirementAge(retirementAge)}
                   setSalary={(salary: number) => setSalary(salary)}
                   setTaxRate={(taxRate: number) => setTaxRate(taxRate)}
                 />
-              </Card>
+              </div>
             </div>
             <div
               style={{
                 flex: 1.5,
                 display: "flex",
                 flexDirection: "row",
-                gap: 10,
+                gap: 30,
               }}
             >
-              <Card sx={{ flex: 1 }}>
+              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
                 <CardContent className="flex flex-col">
-                  <Typography variant="h6">Accounts</Typography>
+                  <Typography variant="h6">
+                    <b>Accounts</b>
+                  </Typography>
                   <div className="flex flex-col gap-4 flex-1">
                     <Card
                       className="h-full"
@@ -150,10 +137,7 @@ const App = () => {
                           Add Account
                         </button>
                         {accounts.map((account) => (
-                          <div
-                            key={account.name + "-" + account.id}
-                            style={{ marginBottom: "8px" }}
-                          >
+                          <div key={account.name + "-" + account.id} style={{ marginBottom: "8px" }}>
                             <AccountAccordion
                               account={account}
                               updateAccount={updateAccount}
@@ -165,54 +149,64 @@ const App = () => {
                         ))}
                       </CardContent>
                     </Card>
-                    <Card
+                    <div
                       className="h-full"
-                      sx={{
+                      style={{
                         display: "flex",
                         flexDirection: "column",
+                        backgroundColor: "white",
+                        borderRadius: "10px",
                       }}
-                    ></Card>
+                    ></div>
                   </div>
                 </CardContent>
-              </Card>
-              <Card sx={{ flex: 1 }}>
+              </div>
+              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
                 <CardContent className="flex flex-col">
-                  <Typography variant="h6">Income Breakdown</Typography>
+                  <Typography variant="h6">
+                    <b>Income Breakdown</b>
+                  </Typography>
                   <IncomeBreakdown salary={salary} />
                 </CardContent>
-              </Card>
+              </div>
             </div>
             <div
               style={{
                 flex: 1.5,
                 display: "flex",
                 flexDirection: "row",
-                gap: 10,
+                gap: 30,
               }}
             >
-              <Card sx={{ flex: 1 }}>
+              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
                 <CardContent className="flex flex-col">
-                  <Typography variant="h6">Budget</Typography>
+                  <Typography variant="h6">
+                    <b>Budget</b>
+                  </Typography>
                   <BudgetSection />
                 </CardContent>
-              </Card>
-              <Card sx={{ flex: 1 }}>
+              </div>
+              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
                 <CardContent className="flex flex-col">
-                  <Typography variant="h6">Spending Breakdown</Typography>
+                  <Typography variant="h6">
+                    <b>Spending Breakdown</b>
+                  </Typography>
                 </CardContent>
-              </Card>
+              </div>
             </div>
             <div
               style={{
                 flex: 1.5,
                 display: "flex",
                 flexDirection: "row",
-                gap: 10,
+                gap: 30,
               }}
             >
-              <Card sx={{ flex: 1 }}>
+              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px", marginBottom: "30px" }}>
                 <CardContent className="flex flex-col">
-                  <Typography variant="h6">Individual Accounts</Typography>
+                  <Typography variant="h6">
+                    <b>Individual Accounts</b>
+                  </Typography>
                   <GraphSection
                     accounts={accounts}
                     mode="individual accounts"
@@ -220,10 +214,12 @@ const App = () => {
                     retirementAge={retirementAge}
                   />
                 </CardContent>
-              </Card>
-              <Card sx={{ flex: 1 }}>
+              </div>
+              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px", marginBottom: "30px" }}>
                 <CardContent className="flex flex-col">
-                  <Typography variant="h6">Net Worth</Typography>
+                  <Typography variant="h6">
+                    <b>Net Worth</b>
+                  </Typography>
                   <GraphSection
                     accounts={accounts}
                     mode="net worth"
@@ -231,7 +227,7 @@ const App = () => {
                     retirementAge={retirementAge}
                   />
                 </CardContent>
-              </Card>
+              </div>
             </div>
           </div>
         </div>

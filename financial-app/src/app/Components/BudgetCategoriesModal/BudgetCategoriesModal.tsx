@@ -2,6 +2,7 @@ import { ReactNode, useState } from "react";
 import {
   Box,
   Button,
+  IconButton,
   Modal,
   Paper,
   Table,
@@ -15,11 +16,22 @@ import {
 import { SketchPicker } from "react-color";
 import { ColorResult } from "react-color";
 import { Category } from "../BudgetSection/BudgetSection";
+import DeleteButton from "../DeleteButton/DeleteButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 const BudgetCategoriesModal = ({ children, ...props }: Props) => {
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
   const [categoryForColorPicker, setCategoryForColorPicker] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("white");
+
+  function getRandomHexColor() {
+    return (
+      "#" +
+      Math.floor(Math.random() * 0xffffff)
+        .toString(16)
+        .padStart(6, "0")
+    );
+  }
 
   return (
     <>
@@ -39,6 +51,9 @@ const BudgetCategoriesModal = ({ children, ...props }: Props) => {
             borderRadius: "5px",
           }}
         >
+          <IconButton onClick={props.onClose} sx={{ position: "absolute", top: 8, right: 8 }}>
+            <CloseIcon />
+          </IconButton>
           <div className="mb-4 font-bold">Categories</div>
           <TableContainer component={Paper} style={{ maxHeight: 350, overflowY: "auto" }}>
             <Table stickyHeader aria-label="category table">
@@ -49,13 +64,14 @@ const BudgetCategoriesModal = ({ children, ...props }: Props) => {
                       <div className="flex gap-2 items-center">
                         <div
                           style={{
-                            width: "25px",
-                            height: "25px",
+                            width: "50px",
+                            height: "50px",
                             backgroundColor: category.color,
                             borderRadius: "5px",
                             border: "1px solid black",
                           }}
                           onClick={() => {
+                            setSelectedColor(category.color);
                             setShowColorPicker(true);
                             setCategoryForColorPicker(categoryKey);
                           }}
@@ -68,8 +84,8 @@ const BudgetCategoriesModal = ({ children, ...props }: Props) => {
                         ></TextField>
                       </div>
                     </TableCell>
-                    <TableCell align="right" onClick={() => props.removeCategory(categoryKey)}>
-                      Delete
+                    <TableCell align="right">
+                      <DeleteButton onClick={() => props.removeCategory(categoryKey)} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -80,7 +96,7 @@ const BudgetCategoriesModal = ({ children, ...props }: Props) => {
             variant="contained"
             color="primary"
             onClick={() => {
-              props.addCategory("New Category", "blue");
+              props.addCategory("New Category", getRandomHexColor());
             }}
           >
             New Category

@@ -10,20 +10,14 @@ import "./AccountAccordion.css";
 import EditAccountModal from "../EditAccountModal/EditAccountModal";
 
 const AccountAccordion = ({ children, ...props }: Props) => {
-  const [editAccountModalIsOpen, setEditAccountModalIsOpen] =
-    useState<boolean>(false);
-  const [accountAfterEdit, setAccountAfterEdit] = useState<Account>(
-    props.account
-  );
+  const [editAccountModalIsOpen, setEditAccountModalIsOpen] = useState<boolean>(false);
+  const [accountAfterEdit, setAccountAfterEdit] = useState<Account>(props.account);
 
   const sanitizeString = (str: string) => {
     return str.replace(/[^0-9.]/g, "");
   };
 
-  const handleAccountValueChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: string
-  ) => {
+  const handleAccountValueChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
     if (!props.account.id) return;
 
     const sanitizedValue = sanitizeString(e.target.value);
@@ -59,17 +53,11 @@ const AccountAccordion = ({ children, ...props }: Props) => {
     let newValue;
 
     if (field === "startingBalance") {
-      newValue = props.account.startingBalance
-        ? "$" + Number(props.account.startingBalance).toFixed(2)
-        : "";
+      newValue = props.account.startingBalance ? "$" + Number(props.account.startingBalance).toFixed(2) : "";
     } else if (field === "annualInterest") {
-      newValue = props.account.annualInterest
-        ? Number(props.account.annualInterest).toFixed(2) + "%"
-        : "";
+      newValue = props.account.annualInterest ? Number(props.account.annualInterest).toFixed(2) + "%" : "";
     } else if (field === "monthlyContribution") {
-      newValue = props.account.monthlyContribution
-        ? "$" + Number(props.account.monthlyContribution).toFixed(2)
-        : "";
+      newValue = props.account.monthlyContribution ? "$" + Number(props.account.monthlyContribution).toFixed(2) : "";
     }
 
     props.updateAccount(props.account.id, {
@@ -84,9 +72,7 @@ const AccountAccordion = ({ children, ...props }: Props) => {
     }
   };
 
-  const openEditAccountModal = (
-    e: React.MouseEvent<SVGSVGElement, MouseEvent>
-  ) => {
+  const openEditAccountModal = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     setEditAccountModalIsOpen(true);
     e.stopPropagation();
   };
@@ -129,21 +115,10 @@ const AccountAccordion = ({ children, ...props }: Props) => {
         accountAfterEdit={accountAfterEdit}
         setAccountAfterEdit={setAccountAfterEdit}
       />
-      <Accordion
-        expanded={props.account.id === props.expandedAccount}
-        onChange={handleAccordionClick}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1-content"
-          id="panel1-header"
-        >
-          <EditIcon
-            fontSize="small"
-            className="mt-1 mr-2 edit-icon"
-            onClick={(e) => openEditAccountModal(e)}
-          />
-          {props.account.name}
+      <Accordion expanded={props.account.id === props.expandedAccount} onChange={handleAccordionClick}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1-content" id="panel1-header">
+          <EditIcon fontSize="small" className="mt-1 mr-2 edit-icon" onClick={(e) => openEditAccountModal(e)} />
+          {props.account.name || ""}
         </AccordionSummary>
         <AccordionDetails>
           <Box display="flex" flexDirection="column" gap={2}>
@@ -169,20 +144,13 @@ const AccountAccordion = ({ children, ...props }: Props) => {
               label="Monthly Contribution"
               variant="outlined"
               value={props.account.monthlyContribution || ""}
-              onChange={(e) =>
-                handleAccountValueChange(e, "monthlyContribution")
-              }
+              onChange={(e) => handleAccountValueChange(e, "monthlyContribution")}
               onClick={() => handleAccountValueClick("monthlyContribution")}
               onBlur={() => cleanAccountValue("monthlyContribution")}
               autoComplete="off"
             />
             {children}
-            <Button
-              variant="outlined"
-              color="error"
-              disableRipple
-              onClick={() => handleDeleteButtonClick()}
-            >
+            <Button variant="outlined" color="error" disableRipple onClick={() => handleDeleteButtonClick()}>
               Delete Account
             </Button>
           </Box>
