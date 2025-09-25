@@ -2,7 +2,7 @@
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import AccountAccordion from "./Components/AccountAccordion/AccountAccordion";
+import AccountCard from "./Components/AccountCard/AccountCard";
 import { v4 as uuid } from "uuid";
 import { useState } from "react";
 import { Typography } from "@mui/material";
@@ -13,6 +13,7 @@ import IncomeBreakdown from "./Components/IncomeBreakdown/IncomeBreakdown";
 import BudgetSection from "./Components/BudgetSection/BudgetSection";
 import ConfirmModal from "./Components/ConfirmModal/ConfirmModal";
 import NavigationBar from "./Components/NavigationBar/NavigationBar";
+import { FaPlus } from "react-icons/fa";
 
 export interface Account {
   name?: string;
@@ -111,55 +112,27 @@ const App = () => {
               }}
             >
               <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
-                <CardContent className="flex flex-col">
-                  <Typography variant="h6">
-                    <b>Accounts</b>
-                  </Typography>
-                  <div className="flex flex-col gap-4 flex-1">
-                    <Card
-                      className="h-full"
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <CardContent
-                        sx={{
-                          flex: 1,
-                          overflowY: "auto",
-                          paddingTop: "10px",
-                        }}
-                      >
-                        <button
-                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-md my-4 w-full"
-                          onClick={openAddAccountModal}
-                        >
-                          Add Account
-                        </button>
-                        {accounts.map((account) => (
-                          <div key={account.name + "-" + account.id} style={{ marginBottom: "8px" }}>
-                            <AccountAccordion
-                              account={account}
-                              updateAccount={updateAccount}
-                              deleteAccount={deleteAccount}
-                              expandedAccount={expandedAccount}
-                              setExpandedAccount={setExpandedAccount}
-                            />
-                          </div>
-                        ))}
-                      </CardContent>
-                    </Card>
-                    <div
-                      className="h-full"
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        backgroundColor: "white",
-                        borderRadius: "10px",
-                      }}
-                    ></div>
+                <div className="flex flex-col p-4">
+                  <div className="flex justify-between items-center">
+                    <Typography variant="h6">
+                      <b>Accounts</b>
+                    </Typography>
+                    <FaPlus onClick={openAddAccountModal} size={25} color="#b8b8b8" />
                   </div>
-                </CardContent>
+                  <div className="flex flex-col gap-4 pt-4">
+                    {accounts.map((account) => (
+                      <div key={account.name + "-" + account.id} style={{ marginBottom: "8px" }}>
+                        <AccountCard
+                          account={account}
+                          updateAccount={updateAccount}
+                          deleteAccount={deleteAccount}
+                          expandedAccount={expandedAccount}
+                          setExpandedAccount={setExpandedAccount}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
               <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
                 <CardContent className="flex flex-col">
@@ -179,12 +152,20 @@ const App = () => {
               }}
             >
               <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
-                <CardContent className="flex flex-col">
-                  <Typography variant="h6">
-                    <b>Budget</b>
-                  </Typography>
+                <div className="flex flex-col p-4">
+                  <div className="flex justify-between items-center pb-4">
+                    <Typography variant="h6">
+                      <b>Budget</b>
+                    </Typography>
+                    <FaPlus
+                      onClick={() => {} /* add budget item function is in Budget Section Component*/}
+                      size={25}
+                      color="#b8b8b8"
+                    />
+                  </div>
+
                   <BudgetSection />
-                </CardContent>
+                </div>
               </div>
               <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
                 <CardContent className="flex flex-col">
