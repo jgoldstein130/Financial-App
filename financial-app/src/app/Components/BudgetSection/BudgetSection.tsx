@@ -139,7 +139,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
   };
 
   return (
-    <CardContent>
+    <>
       <BudgetCategoriesModal
         isOpen={isBudgetCategoriesModalOpen}
         onClose={() => setIsBudgetCategoriesModalOpen(false)}
@@ -150,99 +150,99 @@ const BudgetSection = ({ children, ...props }: Props) => {
         updateCategoryName={updateCategoryName}
         makeCategoryNameUnique={makeCategoryNameUnique}
       />
-      <TableContainer component={Paper} className="w-full">
-        <Table aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Item</TableCell>
-              <TableCell align="left">Cost</TableCell>
-              <TableCell align="left">Frequency</TableCell>
-              <TableCell align="left">
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    justifyContent: "flex-start",
-                  }}
-                >
-                  Category
-                  <FaPlusSquare size={20} color="green" onClick={() => setIsBudgetCategoriesModalOpen(true)} />
-                </div>
-              </TableCell>
-              <TableCell align="left"></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {budgetItems.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell component="th" scope="row">
-                  <TextField
-                    value={item.name}
-                    variant="standard"
-                    onChange={(e) => updateBudgetItem(item.id, "name", e.target.value)}
-                  ></TextField>
-                </TableCell>
+      <p onClick={addBudgetItem}>add budget item</p>
+      {budgetItems.length > 0 && (
+        <TableContainer component={Paper} className="w-full">
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Item</TableCell>
+                <TableCell align="left">Cost</TableCell>
+                <TableCell align="left">Frequency</TableCell>
                 <TableCell align="left">
-                  <TextField
-                    value={item.cost}
-                    variant="standard"
-                    onChange={(e) => updateBudgetItem(item.id, "cost", e.target.value)}
-                  ></TextField>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    Category
+                    <FaPlusSquare size={20} color="green" onClick={() => setIsBudgetCategoriesModalOpen(true)} />
+                  </div>
                 </TableCell>
-                <TableCell
-                  align="left"
-                  sx={{
-                    maxWidth: "150px",
-                    minWidth: "150px",
-                  }}
-                >
-                  <FormControl fullWidth>
-                    {!item.frequency && <InputLabel>Frequency</InputLabel>}
-                    <Select
-                      value={item.frequency}
-                      onChange={(e) => updateBudgetItem(item.id, "frequency", e.target.value)}
-                    >
-                      <MenuItem value={""}>Select Frequency</MenuItem>
-                      {frequencyOptions.map((frequencyOption) => (
-                        <MenuItem value={frequencyOption}>{frequencyOption}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </TableCell>
-                <TableCell
-                  align="left"
-                  sx={{
-                    backgroundColor: getCategoryColorFromName(item.category),
-                    maxWidth: "200px",
-                    minWidth: "200px",
-                  }}
-                >
-                  <FormControl fullWidth>
-                    {!item.category && <InputLabel>Category</InputLabel>}
-                    <Select
-                      value={item.category}
-                      onChange={(e) => updateBudgetItem(item.id, "category", e.target.value)}
-                    >
-                      <MenuItem value={""}>Select Category</MenuItem>
-                      {[...categories.values()].map((category) => (
-                        <MenuItem value={category.categoryName}>{category.categoryName}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </TableCell>
-                <TableCell align="left">
-                  <DeleteButton onClick={() => removeBudgetItem(item.id, item.name)} />
-                </TableCell>
+                <TableCell align="left"></TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Button variant="contained" onClick={addBudgetItem}>
-        Add Budget Item
-      </Button>
-    </CardContent>
+            </TableHead>
+            <TableBody>
+              {budgetItems.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell component="th" scope="row">
+                    <TextField
+                      value={item.name}
+                      variant="standard"
+                      onChange={(e) => updateBudgetItem(item.id, "name", e.target.value)}
+                    ></TextField>
+                  </TableCell>
+                  <TableCell align="left">
+                    <TextField
+                      value={item.cost}
+                      variant="standard"
+                      onChange={(e) => updateBudgetItem(item.id, "cost", e.target.value)}
+                    ></TextField>
+                  </TableCell>
+                  <TableCell
+                    align="left"
+                    sx={{
+                      maxWidth: "150px",
+                      minWidth: "150px",
+                    }}
+                  >
+                    <FormControl fullWidth>
+                      {!item.frequency && <InputLabel>Frequency</InputLabel>}
+                      <Select
+                        value={item.frequency}
+                        onChange={(e) => updateBudgetItem(item.id, "frequency", e.target.value)}
+                      >
+                        <MenuItem value={""}>Select Frequency</MenuItem>
+                        {frequencyOptions.map((frequencyOption) => (
+                          <MenuItem value={frequencyOption}>{frequencyOption}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </TableCell>
+                  <TableCell
+                    align="left"
+                    sx={{
+                      backgroundColor: getCategoryColorFromName(item.category),
+                      maxWidth: "200px",
+                      minWidth: "200px",
+                    }}
+                  >
+                    <FormControl fullWidth>
+                      {!item.category && <InputLabel>Category</InputLabel>}
+                      <Select
+                        value={item.category}
+                        onChange={(e) => updateBudgetItem(item.id, "category", e.target.value)}
+                      >
+                        <MenuItem value={""}>Select Category</MenuItem>
+                        {[...categories.values()].map((category) => (
+                          <MenuItem value={category.categoryName}>{category.categoryName}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </TableCell>
+                  <TableCell align="left">
+                    <DeleteButton onClick={() => removeBudgetItem(item.id, item.name)} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </>
   );
 };
 

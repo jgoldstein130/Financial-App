@@ -4,23 +4,31 @@ import { ReactNode, useState } from "react";
 
 const AddAccountModal = ({ children, ...props }: Props) => {
   const [newAccount, setNewAccount] = useState<Account>({});
+  const [showErrorMessage, setShowErrorMessage] = useState<string>("");
 
   const handleCreateAccountClick = () => {
     if (newAccount) {
-      props.addAccount(newAccount);
-      setNewAccount({});
-      props.onClose();
+      if (newAccount.name) {
+        props.addAccount(newAccount);
+        setNewAccount({});
+        props.onClose();
+        setShowErrorMessage("");
+      } else {
+        setShowErrorMessage("You Must Add An Account Name");
+      }
     }
   };
 
   const handleCancelClick = () => {
-    props.onCancel();
     setNewAccount({});
+    setShowErrorMessage("");
+    props.onCancel();
   };
 
   const handleClose = () => {
-    props.onClose();
+    setShowErrorMessage("");
     setNewAccount({});
+    props.onClose();
   };
 
   return (
@@ -40,15 +48,11 @@ const AddAccountModal = ({ children, ...props }: Props) => {
         <Typography id="modal-modal-title" variant="h6" component="h2">
           Create Account
         </Typography>
-        <Box
-          display="flex"
-          flexDirection="column"
-          gap={2}
-          className="mt-8 mb-10"
-        >
+        <div className="my-4">
           <TextField
             label="Account Name"
             variant="outlined"
+            className="w-full"
             value={newAccount.name || ""}
             onChange={(e) =>
               setNewAccount({
@@ -57,25 +61,16 @@ const AddAccountModal = ({ children, ...props }: Props) => {
               })
             }
           />
-        </Box>
-        <Box display="flex" flexDirection="row" justifyContent="space-between">
-          <Button
-            variant="outlined"
-            color="error"
-            disableRipple
-            onClick={handleCancelClick}
-          >
+        </div>
+        {showErrorMessage && <h6 style={{ color: "#D32F2F" }}>{showErrorMessage}</h6>}
+        <div className="flex justify-between mt-4">
+          <Button variant="outlined" color="error" disableRipple onClick={handleCancelClick}>
             Cancel
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disableRipple
-            onClick={handleCreateAccountClick}
-          >
+          <Button variant="contained" color="primary" disableRipple onClick={handleCreateAccountClick}>
             Create Account
           </Button>
-        </Box>
+        </div>
       </Box>
     </Modal>
   );
