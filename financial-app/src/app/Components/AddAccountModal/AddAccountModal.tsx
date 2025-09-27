@@ -1,4 +1,4 @@
-import { Account } from "@/app/page";
+import { Account } from "../../App";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import { ReactNode, useState } from "react";
 
