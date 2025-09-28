@@ -1,7 +1,7 @@
 "use client";
 
 import App from "./App";
-import { ConfirmModalProvider } from "./Contexts/ConfirmModalContext";
+import { ConfirmModalProvider } from "../contexts/ConfirmModalContext";
 
 const Home = () => {
   return (

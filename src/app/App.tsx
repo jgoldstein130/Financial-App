@@ -2,17 +2,17 @@
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import AccountCard from "./Components/AccountCard/AccountCard";
+import AccountCard from "../components/AccountCard/AccountCard";
 import { v4 as uuid } from "uuid";
 import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
-import AddAccountModal from "./Components/AddAccountModal/AddAccountModal";
-import GraphSection from "./Components/GraphSection/GraphSection";
-import DetailsSection from "./Components/DetailsSection/DetailsSection";
-import IncomeBreakdown from "./Components/IncomeBreakdown/IncomeBreakdown";
-import BudgetSection from "./Components/BudgetSection/BudgetSection";
-import ConfirmModal from "./Components/ConfirmModal/ConfirmModal";
-import NavigationBar from "./Components/NavigationBar/NavigationBar";
+import AddAccountModal from "../components/AddAccountModal/AddAccountModal";
+import GraphSection from "../components/GraphSection/GraphSection";
+import DetailsSection from "../components/DetailsSection/DetailsSection";
+import IncomeBreakdown from "../components/IncomeBreakdown/IncomeBreakdown";
+import BudgetSection from "../components/BudgetSection/BudgetSection";
+import ConfirmModal from "../components/ConfirmModal/ConfirmModal";
+import NavigationBar from "../components/NavigationBar/NavigationBar";
 import { FaPlus } from "react-icons/fa";
 
 export interface Account {
@@ -50,12 +50,12 @@ const App = () => {
     setAccounts((prevAccounts) => prevAccounts.filter((account) => account.id !== id));
   };
 
-  useEffect(() => {
-    fetch("/api/josh")
-      .then((res) => res.json())
-      .then((data) => console.log(data))
-      .catch((err) => console.error(err));
-  }, []);
+  //useEffect(() => {
+  //fetch("/api/josh")
+  // .then((res) => res.json())
+  // .then((data) => console.log(data))
+  // .catch((err) => console.error(err));
+  //}, []);
 
   return (
     <>

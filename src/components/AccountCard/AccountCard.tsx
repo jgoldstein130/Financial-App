@@ -1,10 +1,10 @@
 import { ChangeEvent, ReactNode, useContext, useState } from "react";
-import { Account } from "../../App";
+import { Account } from "../../app/App";
 import { Button, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import "./AccountCard.css";
 import EditAccountModal from "../EditAccountModal/EditAccountModal";
-import { ConfirmModalContext } from "@/app/Contexts/ConfirmModalContext";
+import { ConfirmModalContext } from "../../contexts/ConfirmModalContext";
 
 const AccountCard = ({ children, ...props }: Props) => {
   const [editAccountModalIsOpen, setEditAccountModalIsOpen] = useState<boolean>(false);

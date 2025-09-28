@@ -18,7 +18,7 @@ import {
 import BudgetCategoriesModal from "../BudgetCategoriesModal/BudgetCategoriesModal";
 import { FaPlusSquare } from "react-icons/fa";
 import { v4 as uuid } from "uuid";
-import { ConfirmModalContext } from "@/app/Contexts/ConfirmModalContext";
+import { ConfirmModalContext } from "../../contexts/ConfirmModalContext";
 import DeleteButton from "../DeleteButton/DeleteButton";
 
 interface BudgetItem {
