@@ -26,7 +26,7 @@ const NavigationBar = ({ children, ...props }: Props) => {
   };
 
   return (
-    <div className="bg-[#0055a0]" style={{ height: "100vh" }}>
+    <div className="bg-[#516DF5]" style={{ height: "100vh" }}>
       <div
         style={{
           width: "300px",
@@ -37,7 +37,7 @@ const NavigationBar = ({ children, ...props }: Props) => {
         }}
       >
         <div
-          className="bg-[#226ac8]"
+          className="bg-[#6e85f8]"
           style={{
             width: "200px",
             height: "125px",
@@ -65,11 +65,11 @@ const NavigationBar = ({ children, ...props }: Props) => {
           marginLeft: "50px",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", width: "fit-content" }}>
           <MdLogin size={25} />
           <Typography variant="h5">Login</Typography>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", width: "fit-content" }}>
           <RxDashboard size={25} />
           <Typography variant="h5">Dashboard</Typography>
         </div>

@@ -4,7 +4,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import AccountCard from "./Components/AccountCard/AccountCard";
 import { v4 as uuid } from "uuid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import AddAccountModal from "./Components/AddAccountModal/AddAccountModal";
 import GraphSection from "./Components/GraphSection/GraphSection";
@@ -49,6 +49,13 @@ const App = () => {
   const deleteAccount = (id: string) => {
     setAccounts((prevAccounts) => prevAccounts.filter((account) => account.id !== id));
   };
+
+  useEffect(() => {
+    fetch("/api/josh")
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <>

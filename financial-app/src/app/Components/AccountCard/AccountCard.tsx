@@ -1,6 +1,6 @@
 import { ChangeEvent, ReactNode, useContext, useState } from "react";
 import { Account } from "../../App";
-import { Button, Box, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import "./AccountCard.css";
 import EditAccountModal from "../EditAccountModal/EditAccountModal";
@@ -112,14 +112,19 @@ const AccountCard = ({ children, ...props }: Props) => {
           flexDirection: "column",
           gap: "10px",
           width: "300px",
-          border: "1px solid #0055a0",
+          border: "2px solid #516DF5",
           padding: "15px",
           borderRadius: "5px",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           {props.account.name || ""}
-          <EditIcon fontSize="small" className="mt-1 mr-2 edit-icon" onClick={(e) => openEditAccountModal(e)} />
+          <EditIcon
+            fontSize="medium"
+            style={{ color: "#b8b8b8" }}
+            className="mt-1 mr-2 edit-icon"
+            onClick={(e) => openEditAccountModal(e)}
+          />
         </div>
         <TextField
           label="Starting Balance"
