@@ -1,19 +1,12 @@
 import { ReactNode, useContext } from "react";
 import { Box, Button, Divider, Modal, Typography } from "@mui/material";
-import { ConfirmModalContext } from "@/app/Contexts/ConfirmModalContext";
+import { ConfirmModalContext } from "../../contexts/ConfirmModalContext";
 
 const ConfirmModal = ({ children, ...props }: Props) => {
-  const {
-    isConfirmModalOpen,
-    setIsConfirmModalOpen,
-    confirmModalTitle,
-    confirmModalFunction,
-  } = useContext(ConfirmModalContext);
+  const { isConfirmModalOpen, setIsConfirmModalOpen, confirmModalTitle, confirmModalFunction } =
+    useContext(ConfirmModalContext);
   return (
-    <Modal
-      open={isConfirmModalOpen}
-      onClose={() => setIsConfirmModalOpen(false)}
-    >
+    <Modal open={isConfirmModalOpen} onClose={() => setIsConfirmModalOpen(false)}>
       <Box
         sx={{
           position: "absolute",
@@ -37,11 +30,7 @@ const ConfirmModal = ({ children, ...props }: Props) => {
             gap: 1,
           }}
         >
-          <Button
-            variant="outlined"
-            color="inherit"
-            onClick={() => setIsConfirmModalOpen(false)}
-          >
+          <Button variant="outlined" color="inherit" onClick={() => setIsConfirmModalOpen(false)}>
             Cancel
           </Button>
           <Button
