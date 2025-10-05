@@ -1,0 +1,14 @@
+.page{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    width: 250px;
+    transition: color .25s;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.page:hover{
+    color: white !important;
+}

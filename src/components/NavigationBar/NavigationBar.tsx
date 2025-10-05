@@ -2,27 +2,45 @@ import { Typography } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import { RxDashboard } from "react-icons/rx";
 import { MdLogin } from "react-icons/md";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import "./NavigationBar.css";
 
 const NavigationBar = ({ children, ...props }: Props) => {
-  const [balance, setBalance] = useState<string>("");
+  const page = usePathname();
+  const router = useRouter();
+  const [loggedIn, setLoggedIn] = useState<boolean>();
 
   useEffect(() => {
-    setBalance(addCommasToBalance(props.balance));
-  }, [props.balance]);
+    setLoggedIn(getCookie("sessionId") !== undefined);
+  }, []);
 
-  const addCommasToBalance = (balance: number) => {
-    let balanceString = balance.toString();
-    let balanceWithCommas = "";
-    let characterCounter = 0;
-    for (let i = balanceString.length - 1; i >= 0; i--) {
-      characterCounter++;
-      balanceWithCommas = balanceString[i] + balanceWithCommas;
-      if (characterCounter % 3 === 0 && characterCounter !== 0 && i !== 0) {
-        balanceWithCommas = "," + balanceWithCommas;
-      }
-    }
+  const getCookie = (name: string) => {
+    const cookies = document.cookie.split("; ");
+    const cookie = cookies.find((c) => c.startsWith(name + "="));
+    return cookie?.split("=")[1];
+  };
 
-    return "$" + balanceWithCommas;
+  const logout = async () => {
+    const sessionId = getCookie("sessionId");
+    const session = { sessionId: sessionId };
+    const logoutCall = await fetch("/api/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(session),
+    });
+
+    await fetch("/api/deleteCookie", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: "sessionId" }),
+    });
+
+    router.push("/login");
   };
 
   return (
@@ -35,44 +53,60 @@ const NavigationBar = ({ children, ...props }: Props) => {
           flexDirection: "column",
           alignItems: "center",
         }}
-      >
-        <div
-          className="bg-[#6e85f8]"
-          style={{
-            width: "200px",
-            height: "125px",
-            borderRadius: "10px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "10px",
-            marginTop: "50px",
-          }}
-        >
-          <Typography variant="h4">{balance}</Typography>
-          <Typography variant="body1">Current Balance</Typography>
-        </div>
-      </div>
+      ></div>
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex",
-          gap: "20px",
           color: "white",
-          marginTop: "40px",
-          marginLeft: "50px",
+          marginLeft: "25px",
+          marginRight: "25px",
+          gap: "10px",
+          textAlign: "center",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", width: "fit-content" }}>
-          <MdLogin size={25} />
-          <Typography variant="h5">Login</Typography>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", width: "fit-content" }}>
-          <RxDashboard size={25} />
-          <Typography variant="h5">Dashboard</Typography>
-        </div>
+        <Typography variant="h4" style={{ marginTop: "70px", marginBottom: "60px" }}>
+          Finance App
+        </Typography>
+        {!loggedIn && (
+          <Link href="/login">
+            <div
+              className="page"
+              style={{
+                color: page === "/login" ? "white" : "#c4d1ff",
+                backgroundColor: page === "/login" ? "#6e85f8" : "#516DF5",
+              }}
+            >
+              <MdLogin size={25} />
+              <Typography variant="h5">Login</Typography>
+            </div>
+          </Link>
+        )}
+        <Link href="/">
+          <div
+            className="page"
+            style={{
+              color: page === "/" ? "white" : "#c4d1ff",
+              backgroundColor: page === "/" ? "#6e85f8" : "#516DF5",
+            }}
+          >
+            <RxDashboard size={25} />
+            <Typography variant="h5">Dashboard</Typography>
+          </div>
+        </Link>
+        {loggedIn && (
+          <div
+            className="page"
+            style={{
+              color: "#c4d1ff",
+            }}
+            onClick={logout}
+          >
+            <MdLogin size={25} style={{ transform: "scaleX(-1)" }} />
+            <Typography variant="h5">Logout</Typography>
+          </div>
+        )}
       </div>
     </div>
   );

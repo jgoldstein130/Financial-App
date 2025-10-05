@@ -50,13 +50,6 @@ const App = () => {
     setAccounts((prevAccounts) => prevAccounts.filter((account) => account.id !== id));
   };
 
-  //useEffect(() => {
-  //fetch("/api/josh")
-  // .then((res) => res.json())
-  // .then((data) => console.log(data))
-  // .catch((err) => console.error(err));
-  //}, []);
-
   return (
     <>
       <ConfirmModal />
