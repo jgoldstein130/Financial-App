@@ -2,7 +2,7 @@
 
 import NavigationBar from "@/components/NavigationBar/NavigationBar";
 import LoginBackground from "../../assets/LoginBackground.jpg";
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -18,6 +18,7 @@ const SignUpPage = () => {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const isValidEmail = (email: string) => {
@@ -31,6 +32,8 @@ const SignUpPage = () => {
       return;
     }
 
+    setIsLoading(true);
+
     const loginCall = await fetch("/api/login", {
       method: "POST",
       headers: {
@@ -42,6 +45,7 @@ const SignUpPage = () => {
 
     if (loginCall.status !== 200) {
       setErrorMessage(loginResponse);
+      setIsLoading(false);
       return;
     }
 
@@ -85,31 +89,44 @@ const SignUpPage = () => {
             height: "700px",
             display: "flex",
             flexDirection: "column",
-            gap: "20px",
+            justifyContent: "space-between",
             textAlign: "center",
-            padding: "20px",
+            padding: "40px",
           }}
         >
-          <Typography variant="h5">Login</Typography>
-          <TextField
-            label="Email"
-            variant="outlined"
-            onChange={(e) => setLoginInfo((prev) => ({ ...prev, email: e.target.value }))}
-          />
-          <TextField
-            label="Password"
-            variant="outlined"
-            onChange={(e) => setLoginInfo((prev) => ({ ...prev, password: e.target.value }))}
-          />
-          {errorMessage && (
-            <Typography variant="body1" color="red">
-              {errorMessage}
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <Typography variant="h4">
+              <b>Login</b>
             </Typography>
-          )}
-          <Button variant="contained" onClick={login}>
-            Login
-          </Button>
-          <Link href="/signUp">Sign Up</Link>
+            <TextField
+              label="Email"
+              variant="outlined"
+              onChange={(e) => setLoginInfo((prev) => ({ ...prev, email: e.target.value }))}
+            />
+            <TextField
+              label="Password"
+              variant="outlined"
+              onChange={(e) => setLoginInfo((prev) => ({ ...prev, password: e.target.value }))}
+            />
+            {errorMessage && (
+              <Typography variant="body1" color="red">
+                {errorMessage}
+              </Typography>
+            )}
+            <Button
+              variant="contained"
+              onClick={login}
+              style={{ borderRadius: "20px", background: "linear-gradient(to right, #A4D4F8, #8669F5)" }}
+            >
+              {isLoading ? <CircularProgress size="30px" color="inherit" /> : "Login"}
+            </Button>
+          </div>
+          <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+            Don't Have An Account?
+            <Link href="/signUp">
+              <b>SIGN UP</b>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
