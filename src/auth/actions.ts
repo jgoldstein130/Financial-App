@@ -68,6 +68,8 @@ export const login = async (data: LoginData) => {
 
   const user = existingUser[0];
 
+  await db.delete(SessionTable).where(eq(SessionTable.userId, user.id));
+
   const isCorrectPassword = await comparePasswords(data.password, user.salt, user.hashedPassword);
 
   if (!isCorrectPassword) {
@@ -97,10 +99,10 @@ const createUserSession = async (user: User) => {
   return sessionId;
 };
 
-const getUserFromSessionId = async (sessionId: string) => {
-  const user = await db
+export const getUserIdFromSessionId = async (sessionId: string) => {
+  const session = await db
     .select()
     .from(SessionTable)
     .where(and(eq(SessionTable.id, sessionId), gt(SessionTable.expiresOn, new Date())));
-  return user;
+  return session[0].userId;
 };

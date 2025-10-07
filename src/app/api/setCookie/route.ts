@@ -7,8 +7,8 @@ export async function POST(req: Request) {
   const twoHoursInSeconds = 60 * 60 * 2;
 
   cookieStore.set(body.name, body.value, {
-    httpOnly: false,
-    secure: false,
+    httpOnly: true,
+    secure: true,
     sameSite: "lax",
     path: "/",
     maxAge: twoHoursInSeconds,

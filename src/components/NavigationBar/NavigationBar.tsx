@@ -10,21 +10,28 @@ const NavigationBar = ({ children, ...props }: Props) => {
   const page = usePathname();
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState<boolean>();
+  const [sessionId, setSessionId] = useState<string>();
 
   useEffect(() => {
-    setLoggedIn(getCookie("sessionId") !== undefined);
+    const getSessionCookie = async () => {
+      const sessIdCall = await fetch("/api/getCookie?name=sessionId", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const sessId = await sessIdCall.text();
+
+      setSessionId(sessId);
+      setLoggedIn(sessId !== undefined);
+    };
+
+    getSessionCookie();
   }, []);
 
-  const getCookie = (name: string) => {
-    const cookies = document.cookie.split("; ");
-    const cookie = cookies.find((c) => c.startsWith(name + "="));
-    return cookie?.split("=")[1];
-  };
-
   const logout = async () => {
-    const sessionId = getCookie("sessionId");
     const session = { sessionId: sessionId };
-    const logoutCall = await fetch("/api/logout", {
+    await fetch("/api/logout", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

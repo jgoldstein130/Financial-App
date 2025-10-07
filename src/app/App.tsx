@@ -14,6 +14,7 @@ import BudgetSection from "../components/BudgetSection/BudgetSection";
 import ConfirmModal from "../components/ConfirmModal/ConfirmModal";
 import NavigationBar from "../components/NavigationBar/NavigationBar";
 import { FaPlus } from "react-icons/fa";
+import PlaidLink from "@/components/PlaidLink/PlaidLink";
 
 export interface Account {
   name?: string;
@@ -101,6 +102,7 @@ const App = () => {
                   setSalary={(salary: number) => setSalary(salary)}
                   setTaxRate={(taxRate: number) => setTaxRate(taxRate)}
                 />
+                <PlaidLink />
               </div>
             </div>
             <div
