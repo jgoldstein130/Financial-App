@@ -12,6 +12,16 @@ export const SessionTable = pgTable("session", {
   id: varchar("id", { length: 1024 }).primaryKey().notNull(),
   userId: uuid("user_id")
     .notNull()
+    .unique()
     .references(() => UserTable.id),
   expiresOn: timestamp("expires_on", { mode: "date" }).notNull(),
+});
+
+export const UserInfoTable = pgTable("userInfo", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .unique()
+    .references(() => UserTable.id),
+  plaidToken: varchar("plaid_token", { length: 255 }),
 });

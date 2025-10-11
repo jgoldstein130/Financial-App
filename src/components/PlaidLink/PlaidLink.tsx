@@ -18,9 +18,28 @@ export default function PlaidLinkButton() {
 
   const { open, ready } = usePlaidLink({
     token: linkToken,
-    onSuccess: () => {},
+    onSuccess: async (public_token, metadata) => {
+      await fetch("/api/exchangePublicToken", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ public_token }),
+      });
+
+      const transactionsCall = await fetch("/api/getTransactions", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const transactions = await transactionsCall.json();
+
+      console.log(transactions);
+    },
     onExit: (err, metadata) => {
-      if (err) console.error("Plaid exited with error:", err);
+      if (err) {
+        console.error("Plaid exited with error:", err);
+      } else {
+        console.log("User exited Plaid flow:", metadata);
+      }
     },
   });
 

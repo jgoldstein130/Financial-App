@@ -23,7 +23,11 @@ const NavigationBar = ({ children, ...props }: Props) => {
       const sessId = await sessIdCall.text();
 
       setSessionId(sessId);
-      setLoggedIn(sessId !== undefined);
+      if (sessId) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
     };
 
     getSessionCookie();

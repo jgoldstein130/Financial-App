@@ -8,6 +8,20 @@
       "when": 1759552606236,
       "tag": "0000_odd_squadron_supreme",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1760206373127,
+      "tag": "0001_redundant_firelord",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760206872316,
+      "tag": "0002_panoramic_robin_chapel",
+      "breakpoints": true
     }
   ]
 }
