@@ -3,7 +3,7 @@
 import NavigationBar from "@/components/NavigationBar/NavigationBar";
 import LoginBackground from "../../assets/LoginBackground.jpg";
 import { Button, CircularProgress, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -22,6 +22,23 @@ const SignUpPage = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const redirectIfLoggedIn = async () => {
+      const sessionIdCall = await fetch("/api/getCookie?name=sessionId", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const sessionId = await sessionIdCall.text();
+      if (sessionId) {
+        router.push("/");
+      }
+    };
+
+    redirectIfLoggedIn();
+  }, []);
 
   const checkSignInInfo = (info: SignUpInfo) => {
     if (info.name.length < 4 || info.name.length > 50) {
