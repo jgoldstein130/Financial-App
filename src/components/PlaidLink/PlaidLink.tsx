@@ -1,10 +1,11 @@
+import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { usePlaidLink } from "react-plaid-link";
 
 export default function PlaidLinkButton() {
   const [linkToken, setLinkToken] = useState<string>("");
 
-  // TODO: we should only get the link token after we click the button to connect
+  // TODO: we should only get the link token if we dont have a permanent token
 
   useEffect(() => {
     const getLinkToken = async () => {
@@ -44,8 +45,8 @@ export default function PlaidLinkButton() {
   });
 
   return (
-    <button onClick={() => open()} disabled={!ready}>
+    <Button onClick={() => open()} disabled={!ready} variant="contained">
       Connect Bank Account
-    </button>
+    </Button>
   );
 }

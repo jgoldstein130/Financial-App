@@ -49,22 +49,13 @@ const GraphSection = ({ children, ...props }: Props) => {
   };
 
   const getDataForAnAccount = (account: Account, numYears: number) => {
-    if (
-      !account.startingBalance ||
-      !account.annualInterest ||
-      !account.monthlyContribution
-    ) {
+    if (!account.startingBalance || !account.annualInterest || !account.monthlyContribution) {
       return [];
     }
 
-    const startingBalance = Number(
-      account.startingBalance.replace(/[^0-9.]/g, "")
-    );
-    const annualInterest =
-      Number(account.annualInterest.replace(/[^0-9.]/g, "")) / 100;
-    const monthlyContribution = Number(
-      account.monthlyContribution.replace(/[^0-9.]/g, "")
-    );
+    const startingBalance = Number(account.startingBalance.replace(/[^0-9.]/g, ""));
+    const annualInterest = Number(account.annualInterest.replace(/[^0-9.]/g, "")) / 100;
+    const monthlyContribution = Number(account.monthlyContribution.replace(/[^0-9.]/g, ""));
 
     const monthlyInterest = annualInterest / 12;
     const numMonths = numYears * 12;
@@ -74,21 +65,14 @@ const GraphSection = ({ children, ...props }: Props) => {
     let totalBalanceEveryMonth: number[] = [];
     for (let i = 1; i <= numMonths; i++) {
       balanceEveryMonthFromContributions.push(
-        balanceEveryMonthFromContributions[
-          balanceEveryMonthFromContributions.length - 1
-        ] +
+        balanceEveryMonthFromContributions[balanceEveryMonthFromContributions.length - 1] +
           monthlyContribution * Math.pow(1 + monthlyInterest, i - 1)
       );
     }
     for (let i = 1; i <= numMonths; i++) {
       balanceEveryMonthyStartingBalance.push(
-        balanceEveryMonthyStartingBalance[
-          balanceEveryMonthyStartingBalance.length - 1
-        ] +
-          balanceEveryMonthyStartingBalance[
-            balanceEveryMonthyStartingBalance.length - 1
-          ] *
-            monthlyInterest
+        balanceEveryMonthyStartingBalance[balanceEveryMonthyStartingBalance.length - 1] +
+          balanceEveryMonthyStartingBalance[balanceEveryMonthyStartingBalance.length - 1] * monthlyInterest
       );
     }
     totalBalanceEveryMonth = sumArraysIn2dArray([
@@ -96,9 +80,7 @@ const GraphSection = ({ children, ...props }: Props) => {
       balanceEveryMonthFromContributions,
     ]);
 
-    const totalBalanceEveryYear = totalBalanceEveryMonth.filter(
-      (_, index) => (index + 1) % 12 === 1
-    );
+    const totalBalanceEveryYear = totalBalanceEveryMonth.filter((_, index) => (index + 1) % 12 === 1);
 
     return totalBalanceEveryYear;
   };
@@ -113,15 +95,12 @@ const GraphSection = ({ children, ...props }: Props) => {
     }
   };
 
-  return props.retirementAge > props.currentAge &&
-    props.retirementAge - props.currentAge < 200 ? (
+  return props.retirementAge > props.currentAge && props.retirementAge - props.currentAge < 200 ? (
     <LineChart
-      series={(
-        getDataForAllAccounts(props.retirementAge - props.currentAge) || []
-      ).map((series) => ({
+      series={(getDataForAllAccounts(props.retirementAge - props.currentAge) || []).map((series) => ({
         ...series,
-        valueFormatter: (value) =>
-          value !== null ? "$" + getShorthandForBigNumbers(value) : "",
+        valueFormatter: (value) => (value !== null ? "$" + getShorthandForBigNumbers(value) : ""),
+        showMark: false,
       }))}
       xAxis={[
         {
@@ -134,8 +113,7 @@ const GraphSection = ({ children, ...props }: Props) => {
           label: "Balance ($)",
           width: 80,
           tickNumber: 4,
-          valueFormatter: (balance: number) =>
-            getShorthandForBigNumbers(balance),
+          valueFormatter: (balance: number) => getShorthandForBigNumbers(balance),
         },
       ]}
       margin={0}

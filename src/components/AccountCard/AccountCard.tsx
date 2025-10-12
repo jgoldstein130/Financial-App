@@ -1,5 +1,5 @@
 import { ChangeEvent, ReactNode, useContext, useState } from "react";
-import { Account } from "../../app/App";
+import { Account } from "../../app/page";
 import { Button, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import "./AccountCard.css";
@@ -167,8 +167,6 @@ interface Props {
   account: Account;
   updateAccount: (id: string, updatedAccount: Account) => void;
   deleteAccount: (id: string) => void;
-  expandedAccount: string;
-  setExpandedAccount: (id: string) => void;
 }
 
 export default AccountCard;

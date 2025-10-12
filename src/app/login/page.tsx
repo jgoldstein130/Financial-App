@@ -6,6 +6,7 @@ import { Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { setCookie } from "@/utils/Utilities";
 
 interface LoginInfo {
   email: string;
@@ -73,6 +74,8 @@ const SignUpPage = () => {
       },
       body: JSON.stringify({ name: "sessionId", value: loginResponse }),
     });
+
+    setCookie("loggedIn", true, 7);
 
     router.push("/");
   };

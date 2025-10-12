@@ -2,19 +2,20 @@
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import AccountCard from "../components/AccountCard/AccountCard";
+import AccountCard from "../../components/AccountCard/AccountCard";
 import { v4 as uuid } from "uuid";
 import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
-import AddAccountModal from "../components/AddAccountModal/AddAccountModal";
-import GraphSection from "../components/GraphSection/GraphSection";
-import DetailsSection from "../components/DetailsSection/DetailsSection";
-import IncomeBreakdown from "../components/IncomeBreakdown/IncomeBreakdown";
-import BudgetSection from "../components/BudgetSection/BudgetSection";
-import ConfirmModal from "../components/ConfirmModal/ConfirmModal";
-import NavigationBar from "../components/NavigationBar/NavigationBar";
+import AddAccountModal from "../../components/AddAccountModal/AddAccountModal";
+import GraphSection from "../../components/GraphSection/GraphSection";
+import DetailsSection from "../../components/DetailsSection/DetailsSection";
+import IncomeBreakdown from "../../components/IncomeBreakdown/IncomeBreakdown";
+import BudgetSection from "../../components/BudgetSection/BudgetSection";
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
+import NavigationBar from "../../components/NavigationBar/NavigationBar";
 import { FaPlus } from "react-icons/fa";
 import PlaidLink from "@/components/PlaidLink/PlaidLink";
+import { ConfirmModalProvider } from "@/contexts/ConfirmModalContext";
 
 export interface Account {
   name?: string;
@@ -24,9 +25,8 @@ export interface Account {
   monthlyContribution?: string;
 }
 
-const App = () => {
+const FinancialPlanning = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [expandedAccount, setExpandedAccount] = useState<string>("");
   const [isAddAccountModalOpened, setIsAddAccountModalOpened] = useState<boolean>(false);
   const [currentAge, setCurrentAge] = useState<number>(18);
   const [retirementAge, setRetirementAge] = useState<number>(65);
@@ -40,7 +40,6 @@ const App = () => {
   const addAccount = (account: Account) => {
     const id = uuid();
     setAccounts((prevAccounts) => [...prevAccounts, { ...account, id: id }]);
-    setExpandedAccount(id);
   };
 
   const updateAccount = (id: string, updatedAccount: Account) => {
@@ -52,7 +51,7 @@ const App = () => {
   };
 
   return (
-    <>
+    <ConfirmModalProvider>
       <ConfirmModal />
       <AddAccountModal
         accountName={""}
@@ -124,58 +123,13 @@ const App = () => {
                   <div className="flex flex-col gap-4 pt-4">
                     {accounts.map((account) => (
                       <div key={account.name + "-" + account.id} style={{ marginBottom: "8px" }}>
-                        <AccountCard
-                          account={account}
-                          updateAccount={updateAccount}
-                          deleteAccount={deleteAccount}
-                          expandedAccount={expandedAccount}
-                          setExpandedAccount={setExpandedAccount}
-                        />
+                        <AccountCard account={account} updateAccount={updateAccount} deleteAccount={deleteAccount} />
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
-                <CardContent className="flex flex-col">
-                  <Typography variant="h6">
-                    <b>Income Breakdown</b>
-                  </Typography>
-                  <IncomeBreakdown salary={salary} />
-                </CardContent>
-              </div>
-            </div>
-            <div
-              style={{
-                flex: 1.5,
-                display: "flex",
-                flexDirection: "row",
-                gap: 30,
-              }}
-            >
-              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
-                <div className="flex flex-col p-4">
-                  <div className="flex justify-between items-center pb-4">
-                    <Typography variant="h6">
-                      <b>Budget</b>
-                    </Typography>
-                    <FaPlus
-                      onClick={() => {} /* add budget item function is in Budget Section Component*/}
-                      size={25}
-                      color="#b8b8b8"
-                    />
-                  </div>
-
-                  <BudgetSection />
-                </div>
-              </div>
-              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
-                <CardContent className="flex flex-col">
-                  <Typography variant="h6">
-                    <b>Spending Breakdown</b>
-                  </Typography>
-                </CardContent>
-              </div>
+              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}></div>
             </div>
             <div
               style={{
@@ -215,8 +169,8 @@ const App = () => {
           </div>
         </div>
       </div>
-    </>
+    </ConfirmModalProvider>
   );
 };
 
-export default App;
+export default FinancialPlanning;

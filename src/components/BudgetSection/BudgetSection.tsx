@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useContext, useState } from "react";
 import {
   Button,
   CardContent,
@@ -20,14 +20,7 @@ import { FaPlusSquare } from "react-icons/fa";
 import { v4 as uuid } from "uuid";
 import { ConfirmModalContext } from "../../contexts/ConfirmModalContext";
 import DeleteButton from "../DeleteButton/DeleteButton";
-
-interface BudgetItem {
-  id: string;
-  name: string;
-  cost: number;
-  frequency: string;
-  category: string;
-}
+import { BudgetItem } from "../../app/budget/page";
 
 export interface Category {
   categoryName: string;
@@ -35,7 +28,6 @@ export interface Category {
 }
 
 const BudgetSection = ({ children, ...props }: Props) => {
-  const [budgetItems, setBudgetItems] = useState<BudgetItem[]>([]);
   const [categories, setCategories] = useState<Map<string, Category>>(new Map());
   const [isBudgetCategoriesModalOpen, setIsBudgetCategoriesModalOpen] = useState<boolean>(false);
   const [frequencyOptions, setFrequencyOptions] = useState<string[]>(["Monthly", "Yearly"]);
@@ -61,13 +53,13 @@ const BudgetSection = ({ children, ...props }: Props) => {
     newCategories.delete(categoryKey);
     setCategories(newCategories);
 
-    const newBudgetItems = [...budgetItems];
+    const newBudgetItems = [...props.budgetItems];
     for (let i = 0; i < newBudgetItems.length; i++) {
       if (newBudgetItems[i].category === categoryName) {
         newBudgetItems[i].category = "";
       }
     }
-    setBudgetItems(newBudgetItems);
+    props.setBudgetItems(newBudgetItems);
   };
 
   const updateCategoryColor = (categoryKey: string, color: string) => {
@@ -117,24 +109,18 @@ const BudgetSection = ({ children, ...props }: Props) => {
 
   const removeBudgetItem = (id: string, name: string) => {
     setConfirmModalFunction(() => () => {
-      setBudgetItems((prevItems) => [...prevItems.filter((item) => item.id !== id)]);
+      props.setBudgetItems((prevItems) => [...prevItems.filter((item) => item.id !== id)]);
     });
     setConfirmModalTitle(`Are You Sure You Want To Delete The Budget Item "${name}"?`);
     setIsConfirmModalOpen(true);
   };
 
-  const addBudgetItem = () => {
-    const newBudgetItems = [...budgetItems];
-    newBudgetItems.push({ id: uuid(), name: "", cost: 0, frequency: "", category: "" });
-    setBudgetItems(newBudgetItems);
-  };
-
   const updateBudgetItem = (id: string, typeOfUpdate: keyof BudgetItem, newValue: string) => {
-    const newBudgetItems = [...budgetItems];
+    const newBudgetItems = [...props.budgetItems];
     const index = newBudgetItems.findIndex((item) => item.id === id);
     if (index !== -1) {
       (newBudgetItems[index][typeOfUpdate] as any) = newValue;
-      setBudgetItems(newBudgetItems);
+      props.setBudgetItems(newBudgetItems);
     }
   };
 
@@ -150,8 +136,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
         updateCategoryName={updateCategoryName}
         makeCategoryNameUnique={makeCategoryNameUnique}
       />
-      <p onClick={addBudgetItem}>add budget item</p>
-      {budgetItems.length > 0 && (
+      {props.budgetItems.length > 0 && (
         <TableContainer component={Paper} className="w-full">
           <Table aria-label="simple table">
             <TableHead>
@@ -176,7 +161,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {budgetItems.map((item) => (
+              {props.budgetItems.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell component="th" scope="row">
                     <TextField
@@ -248,6 +233,8 @@ const BudgetSection = ({ children, ...props }: Props) => {
 
 interface Props {
   children?: ReactNode;
+  budgetItems: BudgetItem[];
+  setBudgetItems: Dispatch<SetStateAction<BudgetItem[]>>;
 }
 
 export default BudgetSection;
