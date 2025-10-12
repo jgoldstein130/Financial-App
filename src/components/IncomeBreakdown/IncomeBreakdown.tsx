@@ -1,14 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
-import {
-  Button,
-  CardContent,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
-import { getFederalTaxData } from "@/app/Utilities/ApiService";
+import { Button, CardContent, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { getFederalTaxData } from "../../utils/ApiService";
 import { PieChart } from "@mui/x-charts";
 
 export interface TaxData {
@@ -53,47 +45,71 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
   const [filingStatus, setFilingStatus] = useState("single");
   const [federalTaxData, setFederalTaxData] = useState<TaxData>();
   const [stateTaxRate, setStateTaxRate] = useState<string>("");
-  const [showTaxDetails, setShowTaxDetails] = useState(false);
+  const [salary, setSalary] = useState<string>("");
+  const [salaryNumber, setSalaryNumber] = useState<number>(0);
 
   useEffect(() => {
     const getTaxData = async () => {
-      if (props.salary) {
-        // const federalTaxDataResponse = await getFederalTaxData(
-        //   props.salary,
-        //   filingStatus
-        // );
-        //console.log(federalTaxDataResponse);
-        // setFederalTaxData(federalTaxDataResponse);
+      if (salary) {
+        //const federalTaxDataResponse = await getFederalTaxData(salaryNumber, filingStatus);
+        //setFederalTaxData(federalTaxDataResponse);
         console.log("TEST MODE ENABLED");
         setFederalTaxData(testData);
       }
     };
     getTaxData();
-  }, [filingStatus, props.salary]);
+  }, [filingStatus, salary]);
 
   const getIncomeAfterTax = () => {
     if (federalTaxData) {
-      let income = props.salary;
+      let income = salaryNumber;
       income -= federalTaxData.federal_taxes_owed;
       income -= federalTaxData.fica_total;
       if (stateTaxRate) {
-        income -= (props.salary * Number(stateTaxRate)) / 100;
+        income -= (salaryNumber * Number(stateTaxRate)) / 100;
       }
       return income;
     }
     return 0;
   };
 
+  const handleSalaryClick = () => {
+    let sanitizedSalary;
+    sanitizedSalary = sanitizeString(salary || "");
+    setSalary(sanitizedSalary);
+    setSalaryNumber(Number(sanitizedSalary));
+  };
+
+  const handleSalaryBlur = () => {
+    let salaryWithDollarSign;
+    salaryWithDollarSign = salary ? "$" + salaryNumber.toFixed(2) : "";
+    setSalary(salaryWithDollarSign);
+  };
+
+  const handleSalaryChange = (newSalary: string) => {
+    setSalary(newSalary);
+    setSalaryNumber(Number(sanitizeString(newSalary)));
+  };
+
+  const sanitizeString = (str: string) => {
+    return str.replace(/[^0-9.]/g, "");
+  };
+
   return (
     <CardContent>
       <div className="flex flex-col gap-4">
+        <TextField
+          value={salary || ""}
+          label="Salary"
+          variant="outlined"
+          fullWidth
+          onChange={(e) => handleSalaryChange(e.target.value)}
+          onClick={handleSalaryClick}
+          onBlur={handleSalaryBlur}
+        />
         <FormControl fullWidth>
           <InputLabel>Filing Status</InputLabel>
-          <Select
-            value={filingStatus}
-            label="Filing Status"
-            onChange={(e) => setFilingStatus(e.target.value)}
-          >
+          <Select value={filingStatus} label="Filing Status" onChange={(e) => setFilingStatus(e.target.value)}>
             <MenuItem value="single">Single</MenuItem>
             <MenuItem value="married">Married</MenuItem>
             <MenuItem value="married_separate">Married Separetely</MenuItem>
@@ -113,82 +129,49 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
         >
           What is My State Income Tax Rate?
         </a>
-        {!props.salary && <i>Input Salary To Calculate Tax</i>}
+        {!salary && <i>Input Salary To Calculate Tax</i>}
         {federalTaxData && (
-          <div className="flex flex-col items-center gap-4">
-            <PieChart
-              series={[
-                {
-                  data: [
-                    {
-                      value: getIncomeAfterTax(),
-                      label: "Income After Tax",
-                    },
-                    {
-                      value: Number(
-                        federalTaxData.federal_taxes_owed.toFixed(2)
-                      ),
-                      label: "Federal Income Tax",
-                    },
-                    {
-                      value: Number(
-                        federalTaxData.fica_social_security.toFixed(2)
-                      ),
-                      label: "Social Security",
-                    },
-                    {
-                      value: Number(federalTaxData.fica_medicare.toFixed(2)),
-                      label: "Medicare",
-                    },
-                    {
-                      value: stateTaxRate
-                        ? Number(
-                            (
-                              (props.salary * Number(stateTaxRate)) /
-                              100
-                            ).toFixed(2)
-                          )
-                        : 0,
-                      label: "State Income Tax",
-                    },
-                  ],
-                },
-              ]}
-              width={200}
-              height={200}
-            />
-            <Button
-              className="w-md"
-              variant="contained"
-              onClick={() => setShowTaxDetails((prevValue) => !prevValue)}
-            >
-              {showTaxDetails ? "Hide" : "Show"} Details
-            </Button>
-
-            {showTaxDetails && (
-              <div
-                className="p-4 flex flex-col w-full"
-                style={{ border: "1px solid gray", borderRadius: "5px" }}
-              >
-                <p>
-                  Federal Income Tax: $
-                  {federalTaxData.federal_taxes_owed.toFixed(2)}
-                </p>
-                <p>
-                  Social Security: $
-                  {federalTaxData.fica_social_security.toFixed(2)}
-                </p>
-                <p>Medicare: ${federalTaxData.fica_medicare.toFixed(2)}</p>
-                <p>
-                  State Income Tax: $
-                  {stateTaxRate
-                    ? Number(
-                        (props.salary * Number(stateTaxRate)) / 100
-                      ).toFixed(2)
-                    : 0}
-                </p>
-              </div>
-            )}
+          <div className="flex justify-around items-center">
+            <div style={{ width: "500px" }}>
+              <PieChart
+                series={[
+                  {
+                    data: [
+                      {
+                        value: getIncomeAfterTax(),
+                        label: "Income After Tax",
+                      },
+                      {
+                        value: Number(federalTaxData.federal_taxes_owed.toFixed(2)),
+                        label: "Federal Income Tax",
+                      },
+                      {
+                        value: Number(federalTaxData.fica_social_security.toFixed(2)),
+                        label: "Social Security",
+                      },
+                      {
+                        value: Number(federalTaxData.fica_medicare.toFixed(2)),
+                        label: "Medicare",
+                      },
+                      {
+                        value: stateTaxRate ? Number(((salaryNumber * Number(stateTaxRate)) / 100).toFixed(2)) : 0,
+                        label: "State Income Tax",
+                      },
+                    ],
+                  },
+                ]}
+                width={400}
+                height={300}
+              />
+            </div>
+            <div className="p-4 flex flex-col" style={{ border: "1px solid gray", borderRadius: "5px" }}>
+              <p>Federal Income Tax: ${federalTaxData.federal_taxes_owed.toFixed(2)}</p>
+              <p>Social Security: ${federalTaxData.fica_social_security.toFixed(2)}</p>
+              <p>Medicare: ${federalTaxData.fica_medicare.toFixed(2)}</p>
+              <p>
+                State Income Tax: ${stateTaxRate ? Number((salaryNumber * Number(stateTaxRate)) / 100).toFixed(2) : 0}
+              </p>
+            </div>
           </div>
         )}
       </div>
@@ -198,7 +181,6 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
 
 interface Props {
   children?: ReactNode;
-  salary: number;
 }
 
 export default IncomeBreakdown;

@@ -2,9 +2,12 @@ import { Typography } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import { RxDashboard } from "react-icons/rx";
 import { MdLogin } from "react-icons/md";
+import { FaMoneyCheck } from "react-icons/fa";
+import { BsBank2 } from "react-icons/bs";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import "./NavigationBar.css";
+import { deleteCookie, getCookie } from "@/utils/Utilities";
 
 const NavigationBar = ({ children, ...props }: Props) => {
   const page = usePathname();
@@ -13,24 +16,12 @@ const NavigationBar = ({ children, ...props }: Props) => {
   const [sessionId, setSessionId] = useState<string>();
 
   useEffect(() => {
-    const getSessionCookie = async () => {
-      const sessIdCall = await fetch("/api/getCookie?name=sessionId", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const sessId = await sessIdCall.text();
-
-      setSessionId(sessId);
-      if (sessId) {
-        setLoggedIn(true);
-      } else {
-        setLoggedIn(false);
-      }
-    };
-
-    getSessionCookie();
+    const loggedInCookie = getCookie("loggedIn");
+    if (loggedInCookie) {
+      setLoggedIn(true);
+    } else {
+      setLoggedIn(false);
+    }
   }, []);
 
   const logout = async () => {
@@ -50,6 +41,8 @@ const NavigationBar = ({ children, ...props }: Props) => {
       },
       body: JSON.stringify({ name: "sessionId" }),
     });
+
+    deleteCookie("loggedIn");
 
     router.push("/login");
   };
@@ -104,6 +97,30 @@ const NavigationBar = ({ children, ...props }: Props) => {
           >
             <RxDashboard size={25} />
             <Typography variant="h5">Dashboard</Typography>
+          </div>
+        </Link>
+        <Link href="/budget">
+          <div
+            className="page"
+            style={{
+              color: page === "/budget" ? "white" : "#c4d1ff",
+              backgroundColor: page === "/budget" ? "#6e85f8" : "#516DF5",
+            }}
+          >
+            <FaMoneyCheck size={25} />
+            <Typography variant="h5">Budget</Typography>
+          </div>
+        </Link>
+        <Link href="/financialPlanning">
+          <div
+            className="page"
+            style={{
+              color: page === "/financialPlanning" ? "white" : "#c4d1ff",
+              backgroundColor: page === "/financialPlanning" ? "#6e85f8" : "#516DF5",
+            }}
+          >
+            <BsBank2 size={25} />
+            <Typography variant="h5">Financial Planning</Typography>
           </div>
         </Link>
         {loggedIn && (
