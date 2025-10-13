@@ -1,20 +1,16 @@
 "use client";
 
-import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import AccountCard from "../../components/AccountCard/AccountCard";
 import { v4 as uuid } from "uuid";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Typography } from "@mui/material";
-import AddAccountModal from "../../components/AddAccountModal/AddAccountModal";
-import GraphSection from "../../components/GraphSection/GraphSection";
 import IncomeBreakdown from "../../components/IncomeBreakdown/IncomeBreakdown";
 import BudgetSection from "../../components/BudgetSection/BudgetSection";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import NavigationBar from "../../components/NavigationBar/NavigationBar";
 import { FaPlus } from "react-icons/fa";
-import PlaidLink from "@/components/PlaidLink/PlaidLink";
 import { ConfirmModalProvider } from "@/contexts/ConfirmModalContext";
+import Transactions from "@/components/Transactions/Transactions";
 
 export interface BudgetItem {
   id: string;
@@ -25,10 +21,6 @@ export interface BudgetItem {
 }
 
 const Budget = () => {
-  const [currentAge, setCurrentAge] = useState<number>(18);
-  const [retirementAge, setRetirementAge] = useState<number>(65);
-  const [salary, setSalary] = useState<number>(0);
-  const [taxRate, setTaxRate] = useState<number>(0);
   const [budgetItems, setBudgetItems] = useState<BudgetItem[]>([]);
 
   const addBudgetItem = () => {
@@ -78,7 +70,7 @@ const Budget = () => {
                   <Typography variant="h6">
                     <b>Transactions</b>
                   </Typography>
-                  <PlaidLink />
+                  <Transactions />
                 </CardContent>
               </div>
               <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>

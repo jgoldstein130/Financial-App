@@ -6,8 +6,14 @@ const DeleteButton = ({ children, ...props }: Props) => {
   return (
     <Button
       variant="contained"
-      color="error"
-      style={{ height: "50px", width: "50px", maxWidth: "50px", minWidth: "50px", padding: 0 }}
+      style={{
+        height: "50px",
+        width: "50px",
+        maxWidth: "50px",
+        minWidth: "50px",
+        padding: 0,
+        backgroundColor: "#e33b3b",
+      }}
       onClick={props.onClick}
     >
       <FaTrash color="white" size={25} />

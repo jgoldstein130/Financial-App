@@ -51,7 +51,7 @@ const NavigationBar = ({ children, ...props }: Props) => {
     <div className="bg-[#516DF5]" style={{ height: "100vh" }}>
       <div
         style={{
-          width: "300px",
+          width: "325px",
           color: "white",
           display: "flex",
           flexDirection: "column",
