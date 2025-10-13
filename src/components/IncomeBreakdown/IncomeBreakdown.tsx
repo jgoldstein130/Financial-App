@@ -129,7 +129,7 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
         >
           What is My State Income Tax Rate?
         </a>
-        {!salary && <i>Input Salary To Calculate Tax</i>}
+        {!salary && <i>Input Salary To See Income Breakdown</i>}
         {federalTaxData && (
           <div className="flex justify-around items-center">
             <div style={{ width: "500px" }}>
@@ -164,7 +164,10 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
                 height={300}
               />
             </div>
-            <div className="p-4 flex flex-col" style={{ border: "1px solid gray", borderRadius: "5px" }}>
+            <div
+              className="p-4 flex flex-col"
+              style={{ border: "1px solid gray", borderRadius: "5px", minWidth: "250px" }}
+            >
               <p>Federal Income Tax: ${federalTaxData.federal_taxes_owed.toFixed(2)}</p>
               <p>Social Security: ${federalTaxData.fica_social_security.toFixed(2)}</p>
               <p>Medicare: ${federalTaxData.fica_medicare.toFixed(2)}</p>
