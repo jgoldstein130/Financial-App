@@ -75,7 +75,7 @@ const SignUpPage = () => {
       body: JSON.stringify({ name: "sessionId", value: loginResponse }),
     });
 
-    setCookie("loggedIn", true, 7);
+    setCookie("loggedIn", true, 0.05);
 
     router.push("/");
   };

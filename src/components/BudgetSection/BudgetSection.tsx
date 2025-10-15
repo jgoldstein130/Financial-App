@@ -20,21 +20,15 @@ import { FaPlusSquare } from "react-icons/fa";
 import { v4 as uuid } from "uuid";
 import { ConfirmModalContext } from "../../contexts/ConfirmModalContext";
 import DeleteButton from "../DeleteButton/DeleteButton";
-import { BudgetItem } from "../../app/budget/page";
-
-export interface Category {
-  categoryName: string;
-  color: string;
-}
+import { BudgetItem, Category } from "../../app/budget/page";
 
 const BudgetSection = ({ children, ...props }: Props) => {
-  const [categories, setCategories] = useState<Map<string, Category>>(new Map());
   const [isBudgetCategoriesModalOpen, setIsBudgetCategoriesModalOpen] = useState<boolean>(false);
   const [frequencyOptions, setFrequencyOptions] = useState<string[]>(["Monthly", "Yearly"]);
   const { setIsConfirmModalOpen, setConfirmModalTitle, setConfirmModalFunction } = useContext(ConfirmModalContext);
 
   const addCategory = (categoryName: string, color: string) => {
-    const newCategories = new Map(categories);
+    const newCategories = new Map(props.categories);
     let newCategoryName = categoryName;
     const currentCategoryNames = new Set(newCategories.values().map((category) => category.categoryName));
     let i = 1;
@@ -44,14 +38,14 @@ const BudgetSection = ({ children, ...props }: Props) => {
     }
     const categoryKey = newCategoryName + uuid();
     newCategories.set(categoryKey, { categoryName: newCategoryName, color: color });
-    setCategories(newCategories);
+    props.setCategories(newCategories);
   };
 
   const removeCategory = (categoryKey: string) => {
-    const newCategories = new Map(categories);
+    const newCategories = new Map(props.categories);
     const categoryName = newCategories.get(categoryKey)?.categoryName;
     newCategories.delete(categoryKey);
-    setCategories(newCategories);
+    props.setCategories(newCategories);
 
     const newBudgetItems = [...props.budgetItems];
     for (let i = 0; i < newBudgetItems.length; i++) {
@@ -63,17 +57,17 @@ const BudgetSection = ({ children, ...props }: Props) => {
   };
 
   const updateCategoryColor = (categoryKey: string, color: string) => {
-    const newCategories = new Map(categories);
+    const newCategories = new Map(props.categories);
     const newCategory = newCategories.get(categoryKey);
     if (newCategory) {
       newCategory.color = color;
       newCategories.set(categoryKey, newCategory);
     }
-    setCategories(newCategories);
+    props.setCategories(newCategories);
   };
 
   const updateCategoryName = (categoryKey: string, categoryName: string) => {
-    const newCategories = new Map(categories);
+    const newCategories = new Map(props.categories);
     const newCategory = newCategories.get(categoryKey);
     let newCategoryName;
     if (newCategory) {
@@ -81,11 +75,11 @@ const BudgetSection = ({ children, ...props }: Props) => {
       newCategory.categoryName = newCategoryName;
       newCategories.set(categoryKey, newCategory);
     }
-    setCategories(newCategories);
+    props.setCategories(newCategories);
   };
 
   const makeCategoryNameUnique = (categoryKey: string) => {
-    const newCategories = new Map(categories);
+    const newCategories = new Map(props.categories);
     const newCategory = newCategories.get(categoryKey);
     const currentCategoryNames = [...newCategories.values().map((category) => category.categoryName)];
     if (newCategory) {
@@ -98,11 +92,11 @@ const BudgetSection = ({ children, ...props }: Props) => {
       newCategory.categoryName = newCategoryName;
       newCategories.set(categoryKey, newCategory);
     }
-    setCategories(newCategories);
+    props.setCategories(newCategories);
   };
 
   const getCategoryColorFromName = (categoryName: string) => {
-    const categoryValues = [...categories.values()];
+    const categoryValues = [...props.categories.values()];
     const correctCategory = categoryValues.filter((category) => category.categoryName === categoryName)[0];
     return correctCategory ? correctCategory.color : "white";
   };
@@ -129,7 +123,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
       <BudgetCategoriesModal
         isOpen={isBudgetCategoriesModalOpen}
         onClose={() => setIsBudgetCategoriesModalOpen(false)}
-        categories={categories}
+        categories={props.categories}
         addCategory={addCategory}
         removeCategory={removeCategory}
         updateCategoryColor={updateCategoryColor}
@@ -168,14 +162,14 @@ const BudgetSection = ({ children, ...props }: Props) => {
                       value={item.name}
                       variant="standard"
                       onChange={(e) => updateBudgetItem(item.id, "name", e.target.value)}
-                    ></TextField>
+                    />
                   </TableCell>
                   <TableCell align="left">
                     <TextField
                       value={item.cost}
                       variant="standard"
                       onChange={(e) => updateBudgetItem(item.id, "cost", e.target.value)}
-                    ></TextField>
+                    />
                   </TableCell>
                   <TableCell
                     align="left"
@@ -184,7 +178,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
                       minWidth: "150px",
                     }}
                   >
-                    <FormControl fullWidth>
+                    <FormControl size="small" fullWidth>
                       {!item.frequency && <InputLabel>Frequency</InputLabel>}
                       <Select
                         value={item.frequency}
@@ -200,19 +194,19 @@ const BudgetSection = ({ children, ...props }: Props) => {
                   <TableCell
                     align="left"
                     sx={{
-                      backgroundColor: getCategoryColorFromName(item.category),
                       maxWidth: "200px",
                       minWidth: "200px",
                     }}
                   >
-                    <FormControl fullWidth>
+                    <FormControl size="small" fullWidth>
                       {!item.category && <InputLabel>Category</InputLabel>}
                       <Select
                         value={item.category}
                         onChange={(e) => updateBudgetItem(item.id, "category", e.target.value)}
+                        style={{ backgroundColor: getCategoryColorFromName(item.category) }}
                       >
                         <MenuItem value={""}>Select Category</MenuItem>
-                        {[...categories.values()].map((category) => (
+                        {[...props.categories.values()].map((category) => (
                           <MenuItem value={category.categoryName}>{category.categoryName}</MenuItem>
                         ))}
                       </Select>
@@ -235,6 +229,8 @@ interface Props {
   children?: ReactNode;
   budgetItems: BudgetItem[];
   setBudgetItems: Dispatch<SetStateAction<BudgetItem[]>>;
+  categories: Map<string, Category>;
+  setCategories: Dispatch<SetStateAction<Map<string, Category>>>;
 }
 
 export default BudgetSection;
