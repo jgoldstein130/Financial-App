@@ -131,7 +131,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
         makeCategoryNameUnique={makeCategoryNameUnique}
       />
       {props.budgetItems.length > 0 && (
-        <TableContainer component={Paper} className="w-full">
+        <TableContainer component={Paper} className="w-full" style={{ maxHeight: "500px" }}>
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>

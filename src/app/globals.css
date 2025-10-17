@@ -4,3 +4,7 @@
 *{
   font-family: "Sansation", sans-serif !important;
 }
+
+.MuiPickersInputBase-root{
+  height: 40px
+}

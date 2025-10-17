@@ -1,24 +1,36 @@
-import { ReactNode, useEffect, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import PlaidLink from "../PlaidLink/PlaidLink";
 import {
   ClickAwayListener,
+  FormControl,
+  InputAdornment,
+  InputLabel,
   MenuItem,
   MenuList,
   Paper,
   Popper,
+  Select,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { FaSort } from "react-icons/fa";
+import { Category, Transaction } from "@/app/budget/page";
+import { PickerValue } from "@mui/x-date-pickers/internals";
+import dayjs from "dayjs";
+import { Dayjs } from "dayjs";
+import DeleteButton from "../DeleteButton/DeleteButton";
+import { ConfirmModalContext } from "@/contexts/ConfirmModalContext";
 
 const Transactions = ({ children, ...props }: Props) => {
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [allTransactions, setAllTransactions] = useState<any[]>([]);
-  const [hasConnectedBank, setHasConnectedBank] = useState<boolean>(false);
   const [accountsAnchor, setAccountsAnchor] = useState<null | HTMLElement>(null);
   const [dateAnchor, setDateAnchor] = useState<null | HTMLElement>(null);
   const [isAccountsPopperOpen, setIsAccountsPopperOpen] = useState(false);
@@ -27,6 +39,7 @@ const Transactions = ({ children, ...props }: Props) => {
   const [accountsMap, setAccountsMap] = useState<Map<string, string>>(new Map());
   const [dateFilter, setDateFilter] = useState<string>("allDates");
   const [accountsFilter, setAccountsFilter] = useState<string>("allAccounts");
+  const { setIsConfirmModalOpen, setConfirmModalTitle, setConfirmModalFunction } = useContext(ConfirmModalContext);
 
   useEffect(() => {
     const getTransactions = async () => {
@@ -36,18 +49,14 @@ const Transactions = ({ children, ...props }: Props) => {
       });
 
       const response = await transactionsCall.json();
-      setTransactions(response);
-      setAllTransactions(response);
-    };
-
-    const getHasConnectedBank = async () => {
-      const hasConnectedBankCall = await fetch("/api/hasConnectedBankAccount", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
+      const transactions = response.map((transaction: Transaction) => {
+        return { ...transaction, category: "", manuallyAdded: false };
       });
+      setTransactions(transactions);
 
-      const response = await hasConnectedBankCall.json();
-      setHasConnectedBank(response);
+      const allTransactions = new Map();
+      transactions.forEach((transaction: Transaction) => allTransactions.set(transaction.transaction_id, transaction));
+      props.setAllTransactions(allTransactions);
     };
 
     const getAccounts = async () => {
@@ -61,7 +70,6 @@ const Transactions = ({ children, ...props }: Props) => {
     };
 
     getTransactions();
-    getHasConnectedBank();
     getAccounts();
   }, []);
 
@@ -79,10 +87,11 @@ const Transactions = ({ children, ...props }: Props) => {
 
   useEffect(() => {
     filterTransactions();
-  }, [dateFilter, accountsFilter]);
+  }, [dateFilter, accountsFilter, props.allTransactions]);
 
-  const formattedAmount = (amount: number) => {
-    if (amount > 0) {
+  const formattedAmount = (amount: number | string) => {
+    amount = Number(amount);
+    if (amount >= 0) {
       return "$" + amount.toFixed(2);
     } else {
       return "-$" + (amount * -1).toFixed(2);
@@ -110,9 +119,9 @@ const Transactions = ({ children, ...props }: Props) => {
   };
 
   const filterTransactions = () => {
-    let newTransactions = [];
+    let newTransactions: Transaction[] = [];
     if (dateFilter === "lastMonth") {
-      newTransactions = allTransactions.filter((transaction) => {
+      newTransactions = [...props.allTransactions.values()].filter((transaction) => {
         const oneMonthAgo = new Date(
           Date.UTC(new Date().getFullYear(), new Date().getMonth() - 1, new Date().getDate())
         )
@@ -121,7 +130,7 @@ const Transactions = ({ children, ...props }: Props) => {
         return transaction.date >= oneMonthAgo;
       });
     } else if (dateFilter === "allDates") {
-      newTransactions = allTransactions;
+      newTransactions = [...props.allTransactions.values()];
     }
 
     if (accountsFilter === "allAccounts") {
@@ -134,9 +143,69 @@ const Transactions = ({ children, ...props }: Props) => {
     }
   };
 
+  const updateTransaction = (transactionId: string, field: string, value: string | PickerValue) => {
+    const newTransactions = new Map(props.allTransactions);
+    const transactionToUpdate = newTransactions.get(transactionId);
+    if (transactionToUpdate) {
+      if (field === "amount") {
+        const sanitizedValue = sanitizeString(value as string);
+        value = sanitizedValue;
+      } else if (field === "date") {
+        const formattedDate = (value as Dayjs).format("YYYY-MM-DD");
+        value = formattedDate;
+      }
+
+      (transactionToUpdate as any)[field] = value;
+      newTransactions.set(transactionId, transactionToUpdate);
+      props.setAllTransactions(newTransactions);
+    }
+  };
+
+  const deleteTransaction = (transactionId: string) => {
+    setConfirmModalFunction(() => () => {
+      const newTransactions = new Map(props.allTransactions);
+      newTransactions.delete(transactionId);
+      props.setAllTransactions(newTransactions);
+    });
+    setConfirmModalTitle(
+      `Are You Sure You Want To Delete The Transaction "${props.allTransactions.get(transactionId)?.name}"?`
+    );
+    setIsConfirmModalOpen(true);
+  };
+
+  const onAmountClick = (transactionId: string) => {
+    const newTransactions = new Map(props.allTransactions);
+    const transactionToUpdate = newTransactions.get(transactionId);
+    if (transactionToUpdate) {
+      (transactionToUpdate as any).amount = sanitizeString(transactionToUpdate.amount);
+      newTransactions.set(transactionId, transactionToUpdate);
+      props.setAllTransactions(newTransactions);
+    }
+  };
+
+  const onAmountBlur = (transactionId: string) => {
+    const newTransactions = new Map(props.allTransactions);
+    const transactionToUpdate = newTransactions.get(transactionId);
+    if (transactionToUpdate) {
+      (transactionToUpdate as any).amount = formattedAmount(sanitizeString(transactionToUpdate.amount));
+      newTransactions.set(transactionId, transactionToUpdate);
+      props.setAllTransactions(newTransactions);
+    }
+  };
+
+  const sanitizeString = (str: string) => {
+    return str.replace(/(?!^)-|[^0-9.-]/g, "");
+  };
+
+  const getCategoryColorFromName = (categoryName: string) => {
+    const categoryValues = [...props.categories.values()];
+    const correctCategory = categoryValues.filter((category) => category.categoryName === categoryName)[0];
+    return correctCategory ? correctCategory.color : "white";
+  };
+
   return (
-    <div style={{ padding: "20px" }}>
-      {hasConnectedBank && transactions.length > 0 && accounts.length > 0 ? (
+    <div>
+      {props.hasConnectedBank && accounts.length > 0 ? (
         <TableContainer component={Paper} style={{ maxHeight: "500px" }}>
           <Table aria-label="simple table">
             <TableHead>
@@ -218,28 +287,117 @@ const Transactions = ({ children, ...props }: Props) => {
                     </Popper>
                   </div>
                 </TableCell>
+                <TableCell align="right">Category</TableCell>
+                <TableCell align="right"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {transactions.map((transaction) => (
                 <TableRow key={transaction.transaction_id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   <TableCell component="th" scope="row">
-                    {transaction.name}
+                    {transaction.manuallyAdded ? (
+                      <TextField
+                        value={transaction.name}
+                        variant="standard"
+                        onChange={(e) => updateTransaction(transaction.transaction_id, "name", e.target.value)}
+                      />
+                    ) : (
+                      transaction.name
+                    )}
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    {accountsMap.get(transaction.account_id)}
+                    {transaction.manuallyAdded ? (
+                      <FormControl size="small" style={{ width: "200px", marginLeft: "-14px" }}>
+                        {!transaction.account_id && <InputLabel>Account</InputLabel>}
+                        <Select
+                          value={transaction.account_id}
+                          onChange={(e) => updateTransaction(transaction.transaction_id, "account_id", e.target.value)}
+                          style={{ fontSize: "0.875rem" }}
+                        >
+                          <MenuItem value="">Select Account</MenuItem>
+                          {[...accountsMap.values()].map((account) => (
+                            <MenuItem value={account}>{account}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      accountsMap.get(transaction.account_id)
+                    )}
                   </TableCell>
-                  <TableCell align="right" style={transaction.amount > 0 ? { color: "#11c261" } : { color: "#e33b3b" }}>
-                    {formattedAmount(transaction.amount)}
+                  <TableCell
+                    align="right"
+                    style={{ color: transaction.amount >= 0 ? "#11c261" : "#e33b3b", width: "100px" }}
+                  >
+                    {transaction.manuallyAdded ? (
+                      <TextField
+                        value={transaction.amount}
+                        variant="standard"
+                        onChange={(e) => updateTransaction(transaction.transaction_id, "amount", e.target.value)}
+                        onClick={() => onAmountClick(transaction.transaction_id)}
+                        onBlur={() => onAmountBlur(transaction.transaction_id)}
+                        slotProps={{
+                          htmlInput: {
+                            style: {
+                              color: Number(sanitizeString(transaction.amount)) >= 0 ? "#11c261" : "#e33b3b",
+                              textAlign: "right",
+                            },
+                          },
+                        }}
+                      />
+                    ) : (
+                      formattedAmount(transaction.amount)
+                    )}
                   </TableCell>
-                  <TableCell align="right">{transaction.date}</TableCell>
+                  <TableCell align="right">
+                    {transaction.manuallyAdded ? (
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          sx={{ width: "150px" }}
+                          value={transaction.date ? dayjs(transaction.date) : dayjs()}
+                          onChange={(date) => updateTransaction(transaction.transaction_id, "date", date)}
+                        />
+                      </LocalizationProvider>
+                    ) : (
+                      transaction.date
+                    )}
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    sx={{
+                      maxWidth: "200px",
+                      minWidth: "200px",
+                    }}
+                  >
+                    <FormControl size="small" style={{ width: "200px" }}>
+                      {!transaction.category && <InputLabel>Category</InputLabel>}
+                      <Select
+                        value={transaction.category}
+                        onChange={(e) => updateTransaction(transaction.transaction_id, "category", e.target.value)}
+                        style={{ backgroundColor: getCategoryColorFromName(transaction.category), textAlign: "left" }}
+                      >
+                        <MenuItem value={""}>Select Category</MenuItem>
+                        {[...props.categories.values()].map((category) => (
+                          <MenuItem value={category.categoryName}>{category.categoryName}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </TableCell>
+                  <TableCell align="right">
+                    {transaction.manuallyAdded && (
+                      <DeleteButton
+                        onClick={() => {
+                          deleteTransaction(transaction.transaction_id);
+                        }}
+                      />
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       ) : (
-        <PlaidLink />
+        props.hasConnectedBank === false && <PlaidLink />
       )}
     </div>
   );
@@ -247,6 +405,11 @@ const Transactions = ({ children, ...props }: Props) => {
 
 interface Props {
   children?: ReactNode;
+  hasConnectedBank: Boolean | undefined;
+  allTransactions: Map<String, Transaction>;
+  setAllTransactions: Dispatch<SetStateAction<Map<String, Transaction>>>;
+  categories: Map<string, Category>;
+  setCategories: Dispatch<SetStateAction<Map<string, Category>>>;
 }
 
 export default Transactions;
