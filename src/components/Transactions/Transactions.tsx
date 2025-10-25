@@ -21,7 +21,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { FaSort } from "react-icons/fa";
+import { FaEdit, FaSort } from "react-icons/fa";
 import { Category, Transaction } from "@/app/budget/page";
 import { PickerValue } from "@mui/x-date-pickers/internals";
 import dayjs from "dayjs";
@@ -30,7 +30,6 @@ import DeleteButton from "../DeleteButton/DeleteButton";
 import { ConfirmModalContext } from "@/contexts/ConfirmModalContext";
 
 const Transactions = ({ children, ...props }: Props) => {
-  const [transactions, setTransactions] = useState<any[]>([]);
   const [accountsAnchor, setAccountsAnchor] = useState<null | HTMLElement>(null);
   const [dateAnchor, setDateAnchor] = useState<null | HTMLElement>(null);
   const [isAccountsPopperOpen, setIsAccountsPopperOpen] = useState(false);
@@ -52,7 +51,7 @@ const Transactions = ({ children, ...props }: Props) => {
       const transactions = response.map((transaction: Transaction) => {
         return { ...transaction, category: "", manuallyAdded: false };
       });
-      setTransactions(transactions);
+      props.setTransactions(transactions);
 
       const allTransactions = new Map();
       transactions.forEach((transaction: Transaction) => allTransactions.set(transaction.transaction_id, transaction));
@@ -134,12 +133,12 @@ const Transactions = ({ children, ...props }: Props) => {
     }
 
     if (accountsFilter === "allAccounts") {
-      setTransactions(newTransactions);
+      props.setTransactions(newTransactions);
     } else if (accountsFilter) {
       newTransactions = newTransactions.filter(
         (transaction) => accountsMap.get(transaction.account_id) === accountsFilter
       );
-      setTransactions(newTransactions);
+      props.setTransactions(newTransactions);
     }
   };
 
@@ -195,12 +194,6 @@ const Transactions = ({ children, ...props }: Props) => {
 
   const sanitizeString = (str: string) => {
     return str.replace(/(?!^)-|[^0-9.-]/g, "");
-  };
-
-  const getCategoryColorFromName = (categoryName: string) => {
-    const categoryValues = [...props.categories.values()];
-    const correctCategory = categoryValues.filter((category) => category.categoryName === categoryName)[0];
-    return correctCategory ? correctCategory.color : "white";
   };
 
   return (
@@ -287,12 +280,24 @@ const Transactions = ({ children, ...props }: Props) => {
                     </Popper>
                   </div>
                 </TableCell>
-                <TableCell align="right">Category</TableCell>
+                <TableCell align="right">
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    Category
+                    <FaEdit size={20} onClick={() => props.setIsCategoriesModalOpen(true)} />
+                  </div>
+                </TableCell>
                 <TableCell align="right"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {transactions.map((transaction) => (
+              {props.transactions.map((transaction) => (
                 <TableRow key={transaction.transaction_id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   <TableCell component="th" scope="row">
                     {transaction.manuallyAdded ? (
@@ -315,8 +320,8 @@ const Transactions = ({ children, ...props }: Props) => {
                           style={{ fontSize: "0.875rem" }}
                         >
                           <MenuItem value="">Select Account</MenuItem>
-                          {[...accountsMap.values()].map((account) => (
-                            <MenuItem value={account}>{account}</MenuItem>
+                          {[...accountsMap.entries()].map((account) => (
+                            <MenuItem value={account[0]}>{account[1]}</MenuItem>
                           ))}
                         </Select>
                       </FormControl>
@@ -326,7 +331,7 @@ const Transactions = ({ children, ...props }: Props) => {
                   </TableCell>
                   <TableCell
                     align="right"
-                    style={{ color: transaction.amount >= 0 ? "#11c261" : "#e33b3b", width: "100px" }}
+                    style={{ color: Number(transaction.amount) >= 0 ? "#11c261" : "#e33b3b", width: "100px" }}
                   >
                     {transaction.manuallyAdded ? (
                       <TextField
@@ -361,23 +366,20 @@ const Transactions = ({ children, ...props }: Props) => {
                       transaction.date
                     )}
                   </TableCell>
-                  <TableCell
-                    align="right"
-                    sx={{
-                      maxWidth: "200px",
-                      minWidth: "200px",
-                    }}
-                  >
+                  <TableCell align="right">
                     <FormControl size="small" style={{ width: "200px" }}>
                       {!transaction.category && <InputLabel>Category</InputLabel>}
                       <Select
                         value={transaction.category}
                         onChange={(e) => updateTransaction(transaction.transaction_id, "category", e.target.value)}
-                        style={{ backgroundColor: getCategoryColorFromName(transaction.category), textAlign: "left" }}
+                        style={{
+                          backgroundColor: props.getCategoryColorFromId(transaction.category),
+                          textAlign: "left",
+                        }}
                       >
                         <MenuItem value={""}>Select Category</MenuItem>
-                        {[...props.categories.values()].map((category) => (
-                          <MenuItem value={category.categoryName}>{category.categoryName}</MenuItem>
+                        {[...props.categories.entries()].map((category) => (
+                          <MenuItem value={category[0]}>{category[1].categoryName}</MenuItem>
                         ))}
                       </Select>
                     </FormControl>
@@ -408,8 +410,12 @@ interface Props {
   hasConnectedBank: Boolean | undefined;
   allTransactions: Map<String, Transaction>;
   setAllTransactions: Dispatch<SetStateAction<Map<String, Transaction>>>;
+  transactions: Transaction[];
+  setTransactions: Dispatch<SetStateAction<Transaction[]>>;
   categories: Map<string, Category>;
   setCategories: Dispatch<SetStateAction<Map<string, Category>>>;
+  setIsCategoriesModalOpen: Dispatch<SetStateAction<boolean>>;
+  getCategoryColorFromId: (categoryId: string) => string;
 }
 
 export default Transactions;

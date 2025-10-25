@@ -1,19 +1,10 @@
 "use client";
 
-import CardContent from "@mui/material/CardContent";
-import AccountCard from "../components/AccountCard/AccountCard";
 import { v4 as uuid } from "uuid";
 import { useState } from "react";
-import { Typography } from "@mui/material";
 import AddAccountModal from "../components/AddAccountModal/AddAccountModal";
-import GraphSection from "../components/GraphSection/GraphSection";
-import DetailsSection from "../components/DetailsSection/DetailsSection";
-import IncomeBreakdown from "../components/IncomeBreakdown/IncomeBreakdown";
-import BudgetSection from "../components/BudgetSection/BudgetSection";
 import ConfirmModal from "../components/ConfirmModal/ConfirmModal";
 import NavigationBar from "../components/NavigationBar/NavigationBar";
-import { FaPlus } from "react-icons/fa";
-import PlaidLink from "@/components/PlaidLink/PlaidLink";
 import { ConfirmModalProvider } from "@/contexts/ConfirmModalContext";
 
 export interface Account {
