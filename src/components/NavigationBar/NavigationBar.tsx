@@ -7,7 +7,6 @@ import { BsBank2 } from "react-icons/bs";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import "./NavigationBar.css";
-import { deleteCookie, getCookie } from "@/utils/Utilities";
 
 const NavigationBar = ({ children, ...props }: Props) => {
   const page = usePathname();
@@ -16,8 +15,7 @@ const NavigationBar = ({ children, ...props }: Props) => {
   const [sessionId, setSessionId] = useState<string>();
 
   useEffect(() => {
-    const loggedInCookie = getCookie("loggedIn");
-    if (loggedInCookie) {
+    if (sessionId) {
       setLoggedIn(true);
     } else {
       setLoggedIn(false);
@@ -41,8 +39,6 @@ const NavigationBar = ({ children, ...props }: Props) => {
       },
       body: JSON.stringify({ name: "sessionId" }),
     });
-
-    deleteCookie("loggedIn");
 
     router.push("/login");
   };

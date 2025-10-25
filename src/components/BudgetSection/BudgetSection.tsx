@@ -16,8 +16,7 @@ import {
   TextField,
 } from "@mui/material";
 import BudgetCategoriesModal from "../BudgetCategoriesModal/BudgetCategoriesModal";
-import { FaPlusSquare } from "react-icons/fa";
-import { v4 as uuid } from "uuid";
+import { FaEdit } from "react-icons/fa";
 import { ConfirmModalContext } from "../../contexts/ConfirmModalContext";
 import DeleteButton from "../DeleteButton/DeleteButton";
 import { BudgetItem, Category } from "../../app/budget/page";
@@ -26,80 +25,6 @@ const BudgetSection = ({ children, ...props }: Props) => {
   const [isBudgetCategoriesModalOpen, setIsBudgetCategoriesModalOpen] = useState<boolean>(false);
   const [frequencyOptions, setFrequencyOptions] = useState<string[]>(["Monthly", "Yearly"]);
   const { setIsConfirmModalOpen, setConfirmModalTitle, setConfirmModalFunction } = useContext(ConfirmModalContext);
-
-  const addCategory = (categoryName: string, color: string) => {
-    const newCategories = new Map(props.categories);
-    let newCategoryName = categoryName;
-    const currentCategoryNames = new Set(newCategories.values().map((category) => category.categoryName));
-    let i = 1;
-    while (currentCategoryNames.has(newCategoryName)) {
-      newCategoryName = newCategoryName + "-" + i;
-      i++;
-    }
-    const categoryKey = newCategoryName + uuid();
-    newCategories.set(categoryKey, { categoryName: newCategoryName, color: color });
-    props.setCategories(newCategories);
-  };
-
-  const removeCategory = (categoryKey: string) => {
-    const newCategories = new Map(props.categories);
-    const categoryName = newCategories.get(categoryKey)?.categoryName;
-    newCategories.delete(categoryKey);
-    props.setCategories(newCategories);
-
-    const newBudgetItems = [...props.budgetItems];
-    for (let i = 0; i < newBudgetItems.length; i++) {
-      if (newBudgetItems[i].category === categoryName) {
-        newBudgetItems[i].category = "";
-      }
-    }
-    props.setBudgetItems(newBudgetItems);
-  };
-
-  const updateCategoryColor = (categoryKey: string, color: string) => {
-    const newCategories = new Map(props.categories);
-    const newCategory = newCategories.get(categoryKey);
-    if (newCategory) {
-      newCategory.color = color;
-      newCategories.set(categoryKey, newCategory);
-    }
-    props.setCategories(newCategories);
-  };
-
-  const updateCategoryName = (categoryKey: string, categoryName: string) => {
-    const newCategories = new Map(props.categories);
-    const newCategory = newCategories.get(categoryKey);
-    let newCategoryName;
-    if (newCategory) {
-      newCategoryName = categoryName;
-      newCategory.categoryName = newCategoryName;
-      newCategories.set(categoryKey, newCategory);
-    }
-    props.setCategories(newCategories);
-  };
-
-  const makeCategoryNameUnique = (categoryKey: string) => {
-    const newCategories = new Map(props.categories);
-    const newCategory = newCategories.get(categoryKey);
-    const currentCategoryNames = [...newCategories.values().map((category) => category.categoryName)];
-    if (newCategory) {
-      let newCategoryName = newCategory.categoryName;
-      let i = 1;
-      while (currentCategoryNames.filter((categoryName) => categoryName === newCategoryName).length > 1) {
-        newCategoryName = newCategory.categoryName + "-" + i;
-        i++;
-      }
-      newCategory.categoryName = newCategoryName;
-      newCategories.set(categoryKey, newCategory);
-    }
-    props.setCategories(newCategories);
-  };
-
-  const getCategoryColorFromName = (categoryName: string) => {
-    const categoryValues = [...props.categories.values()];
-    const correctCategory = categoryValues.filter((category) => category.categoryName === categoryName)[0];
-    return correctCategory ? correctCategory.color : "white";
-  };
 
   const removeBudgetItem = (id: string, name: string) => {
     setConfirmModalFunction(() => () => {
@@ -124,11 +49,11 @@ const BudgetSection = ({ children, ...props }: Props) => {
         isOpen={isBudgetCategoriesModalOpen}
         onClose={() => setIsBudgetCategoriesModalOpen(false)}
         categories={props.categories}
-        addCategory={addCategory}
-        removeCategory={removeCategory}
-        updateCategoryColor={updateCategoryColor}
-        updateCategoryName={updateCategoryName}
-        makeCategoryNameUnique={makeCategoryNameUnique}
+        addCategory={props.addCategory}
+        removeCategory={props.removeCategory}
+        updateCategoryColor={props.updateCategoryColor}
+        updateCategoryName={props.updateCategoryName}
+        makeCategoryNameUnique={props.makeCategoryNameUnique}
       />
       {props.budgetItems.length > 0 && (
         <TableContainer component={Paper} className="w-full" style={{ maxHeight: "500px" }}>
@@ -137,7 +62,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
               <TableRow>
                 <TableCell>Item</TableCell>
                 <TableCell align="left">Cost</TableCell>
-                <TableCell align="left">Frequency</TableCell>
+                {/*<TableCell align="left">Frequency</TableCell>*/}
                 <TableCell align="left">
                   <div
                     style={{
@@ -148,7 +73,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
                     }}
                   >
                     Category
-                    <FaPlusSquare size={20} color="green" onClick={() => setIsBudgetCategoriesModalOpen(true)} />
+                    <FaEdit size={20} onClick={() => setIsBudgetCategoriesModalOpen(true)} />
                   </div>
                 </TableCell>
                 <TableCell align="left"></TableCell>
@@ -171,7 +96,7 @@ const BudgetSection = ({ children, ...props }: Props) => {
                       onChange={(e) => updateBudgetItem(item.id, "cost", e.target.value)}
                     />
                   </TableCell>
-                  <TableCell
+                  {/* <TableCell
                     align="left"
                     sx={{
                       maxWidth: "150px",
@@ -190,24 +115,18 @@ const BudgetSection = ({ children, ...props }: Props) => {
                         ))}
                       </Select>
                     </FormControl>
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{
-                      maxWidth: "200px",
-                      minWidth: "200px",
-                    }}
-                  >
-                    <FormControl size="small" fullWidth>
+                  </TableCell>*/}
+                  <TableCell align="left">
+                    <FormControl size="small" style={{ width: "200px" }}>
                       {!item.category && <InputLabel>Category</InputLabel>}
                       <Select
                         value={item.category}
                         onChange={(e) => updateBudgetItem(item.id, "category", e.target.value)}
-                        style={{ backgroundColor: getCategoryColorFromName(item.category) }}
+                        style={{ backgroundColor: props.getCategoryColorFromId(item.category) }}
                       >
                         <MenuItem value={""}>Select Category</MenuItem>
-                        {[...props.categories.values()].map((category) => (
-                          <MenuItem value={category.categoryName}>{category.categoryName}</MenuItem>
+                        {[...props.categories.entries()].map((category) => (
+                          <MenuItem value={category[0]}>{category[1].categoryName}</MenuItem>
                         ))}
                       </Select>
                     </FormControl>
@@ -231,6 +150,12 @@ interface Props {
   setBudgetItems: Dispatch<SetStateAction<BudgetItem[]>>;
   categories: Map<string, Category>;
   setCategories: Dispatch<SetStateAction<Map<string, Category>>>;
+  addCategory: (categoryName: string, color: string) => void;
+  removeCategory: (categoryKey: string) => void;
+  updateCategoryColor: (categoryKey: string, color: string) => void;
+  updateCategoryName: (categoryKey: string, categoryName: string) => void;
+  makeCategoryNameUnique: (categoryKey: string) => void;
+  getCategoryColorFromId: (categoryId: string) => string;
 }
 
 export default BudgetSection;
