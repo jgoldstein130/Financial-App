@@ -352,10 +352,10 @@ const Budget = () => {
               <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
                 <CardContent className="flex flex-col">
                   <Typography variant="h6">
-                    <b>Spending Breakdown</b>
+                    <b>Budget vs Spending</b>
                   </Typography>
                   <BarChart
-                    style={{ width: "100%", maxWidth: "700px", maxHeight: "70vh", aspectRatio: 1.618 }}
+                    style={{ width: "100%", maxHeight: "500px", aspectRatio: 1.618 }}
                     responsive
                     data={dataForGraph}
                     margin={{
@@ -391,7 +391,7 @@ const Budget = () => {
                 gap: 30,
               }}
             >
-              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
+              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px", marginBottom: "30px" }}>
                 <div className="flex flex-col p-4">
                   <Typography variant="h6">
                     <b>Income Breakdown</b>

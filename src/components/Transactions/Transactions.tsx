@@ -198,7 +198,7 @@ const Transactions = ({ children, ...props }: Props) => {
 
   return (
     <div>
-      {props.hasConnectedBank && accounts.length > 0 ? (
+      {props.hasConnectedBank && accounts.length > 0 && (
         <TableContainer component={Paper} style={{ maxHeight: "500px" }}>
           <Table aria-label="simple table">
             <TableHead>
@@ -398,9 +398,10 @@ const Transactions = ({ children, ...props }: Props) => {
             </TableBody>
           </Table>
         </TableContainer>
-      ) : (
-        props.hasConnectedBank === false && <PlaidLink />
       )}
+      <div className="mt-4">
+        <PlaidLink text={props.hasConnectedBank ? "Connect a Different Bank" : "Connect a Bank"} />
+      </div>
     </div>
   );
 };

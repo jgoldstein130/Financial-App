@@ -1,8 +1,8 @@
 import { Button } from "@mui/material";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { usePlaidLink } from "react-plaid-link";
 
-export default function PlaidLinkButton() {
+const PlaidLink = ({ children, ...props }: Props) => {
   const [linkToken, setLinkToken] = useState<string>("");
 
   // TODO: we should only get the link token if we dont have a permanent token
@@ -25,15 +25,6 @@ export default function PlaidLinkButton() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ public_token }),
       });
-
-      const transactionsCall = await fetch("/api/getTransactions", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const transactions = await transactionsCall.json();
-
-      console.log(transactions);
     },
     onExit: (err, metadata) => {
       if (err) {
@@ -45,8 +36,15 @@ export default function PlaidLinkButton() {
   });
 
   return (
-    <Button onClick={() => open()} disabled={!ready} variant="contained">
-      Connect Bank Account
+    <Button onClick={() => open()} disabled={!ready} variant="contained" style={{ backgroundColor: "#6e85f8" }}>
+      {props.text || "Connect Bank Account"}
     </Button>
   );
+};
+
+interface Props {
+  children?: ReactNode;
+  text?: string;
 }
+
+export default PlaidLink;

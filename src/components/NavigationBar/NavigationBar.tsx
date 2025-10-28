@@ -15,11 +15,22 @@ const NavigationBar = ({ children, ...props }: Props) => {
   const [sessionId, setSessionId] = useState<string>();
 
   useEffect(() => {
-    if (sessionId) {
-      setLoggedIn(true);
-    } else {
-      setLoggedIn(false);
-    }
+    const getSessionid = async () => {
+      const sessionIdCall = await fetch("/api/getCookie?name=sessionId", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const sessionId = await sessionIdCall.text();
+      if (sessionId) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+    };
+
+    getSessionid();
   }, []);
 
   const logout = async () => {
@@ -83,7 +94,7 @@ const NavigationBar = ({ children, ...props }: Props) => {
             </div>
           </Link>
         )}
-        <Link href="/">
+        {/*<Link href="/">
           <div
             className="page"
             style={{
@@ -94,7 +105,7 @@ const NavigationBar = ({ children, ...props }: Props) => {
             <RxDashboard size={25} />
             <Typography variant="h5">Dashboard</Typography>
           </div>
-        </Link>
+        </Link>*/}
         <Link href="/budget">
           <div
             className="page"

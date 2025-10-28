@@ -1,20 +1,16 @@
 "use client";
 
-import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import AccountCard from "../../components/AccountCard/AccountCard";
 import { v4 as uuid } from "uuid";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Typography } from "@mui/material";
 import AddAccountModal from "../../components/AddAccountModal/AddAccountModal";
 import GraphSection from "../../components/GraphSection/GraphSection";
 import DetailsSection from "../../components/DetailsSection/DetailsSection";
-import IncomeBreakdown from "../../components/IncomeBreakdown/IncomeBreakdown";
-import BudgetSection from "../../components/BudgetSection/BudgetSection";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import NavigationBar from "../../components/NavigationBar/NavigationBar";
 import { FaPlus } from "react-icons/fa";
-import PlaidLink from "@/components/PlaidLink/PlaidLink";
 import { ConfirmModalProvider } from "@/contexts/ConfirmModalContext";
 
 export interface Account {
@@ -87,26 +83,6 @@ const FinancialPlanning = () => {
           >
             <div
               style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "row",
-                backgroundColor: "white",
-                borderRadius: "10px",
-              }}
-            >
-              <div style={{ flex: 1 }}>
-                <DetailsSection
-                  setCurrentAge={(currentAge: number) => setCurrentAge(currentAge)}
-                  setRetirementAge={(retirementAge: number) => setRetirementAge(retirementAge)}
-                  setSalary={(salary: number) => setSalary(salary)}
-                  setTaxRate={(taxRate: number) => setTaxRate(taxRate)}
-                />
-                <PlaidLink />
-              </div>
-            </div>
-            <div
-              style={{
-                flex: 1.5,
                 display: "flex",
                 flexDirection: "row",
                 gap: 30,
@@ -116,24 +92,33 @@ const FinancialPlanning = () => {
                 <div className="flex flex-col p-4">
                   <div className="flex justify-between items-center">
                     <Typography variant="h6">
-                      <b>Accounts</b>
+                      <b>Savings Accounts</b>
                     </Typography>
                     <FaPlus onClick={openAddAccountModal} size={25} color="#b8b8b8" />
                   </div>
-                  <div className="flex flex-col gap-4 pt-4">
+                  <div className="grid grid-cols-3 gap-4 pt-4">
                     {accounts.map((account) => (
-                      <div key={account.name + "-" + account.id} style={{ marginBottom: "8px" }}>
-                        <AccountCard account={account} updateAccount={updateAccount} deleteAccount={deleteAccount} />
-                      </div>
+                      <AccountCard
+                        key={account.name + "-" + account.id}
+                        account={account}
+                        updateAccount={updateAccount}
+                        deleteAccount={deleteAccount}
+                      />
                     ))}
                   </div>
                 </div>
               </div>
-              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}></div>
+              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
+                <DetailsSection
+                  setCurrentAge={(currentAge: number) => setCurrentAge(currentAge)}
+                  setRetirementAge={(retirementAge: number) => setRetirementAge(retirementAge)}
+                  setSalary={(salary: number) => setSalary(salary)}
+                  setTaxRate={(taxRate: number) => setTaxRate(taxRate)}
+                />
+              </div>
             </div>
             <div
               style={{
-                flex: 1.5,
                 display: "flex",
                 flexDirection: "row",
                 gap: 30,

@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { SketchPicker } from "react-color";
 import { ColorResult } from "react-color";
-import { Category } from "../BudgetSection/BudgetSection";
+import { Category } from "../../app/budget/page";
 import DeleteButton from "../DeleteButton/DeleteButton";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -94,7 +94,7 @@ const BudgetCategoriesModal = ({ children, ...props }: Props) => {
           </TableContainer>
           <Button
             variant="contained"
-            color="primary"
+            style={{ backgroundColor: "#6e85f8", marginTop: "15px" }}
             onClick={() => {
               props.addCategory("New Category", getRandomHexColor());
             }}
