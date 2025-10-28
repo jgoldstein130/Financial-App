@@ -1,6 +1,6 @@
 import { ChangeEvent, ReactNode, useContext, useState } from "react";
 import { Account } from "../../app/page";
-import { Button, TextField } from "@mui/material";
+import { Button, Card, CardContent, TextField } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import "./AccountCard.css";
 import EditAccountModal from "../EditAccountModal/EditAccountModal";
@@ -106,13 +106,12 @@ const AccountCard = ({ children, ...props }: Props) => {
         accountAfterEdit={accountAfterEdit}
         setAccountAfterEdit={setAccountAfterEdit}
       />
-      <div
+      <Card
         style={{
           display: "flex",
           flexDirection: "column",
           gap: "10px",
-          width: "300px",
-          border: "2px solid #516DF5",
+          width: "100%",
           padding: "15px",
           borderRadius: "5px",
         }}
@@ -157,7 +156,7 @@ const AccountCard = ({ children, ...props }: Props) => {
         <Button variant="outlined" color="error" disableRipple onClick={() => handleDeleteButtonClick()}>
           Delete Account
         </Button>
-      </div>
+      </Card>
     </>
   );
 };

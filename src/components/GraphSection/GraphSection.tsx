@@ -42,7 +42,10 @@ const GraphSection = ({ children, ...props }: Props) => {
       return data;
     } else if (props.mode === "net worth") {
       for (let i = 0; i < props.accounts.length; i++) {
-        data.push(getDataForAnAccount(props.accounts[i], numYears));
+        const accountData = getDataForAnAccount(props.accounts[i], numYears);
+        if (accountData) {
+          data.push(accountData);
+        }
       }
       return [{ data: sumArraysIn2dArray(data), label: "Net Worth" }];
     }
@@ -56,6 +59,10 @@ const GraphSection = ({ children, ...props }: Props) => {
     const startingBalance = Number(account.startingBalance.replace(/[^0-9.]/g, ""));
     const annualInterest = Number(account.annualInterest.replace(/[^0-9.]/g, "")) / 100;
     const monthlyContribution = Number(account.monthlyContribution.replace(/[^0-9.]/g, ""));
+
+    if (!startingBalance || !annualInterest || !monthlyContribution) {
+      return [];
+    }
 
     const monthlyInterest = annualInterest / 12;
     const numMonths = numYears * 12;
@@ -117,7 +124,7 @@ const GraphSection = ({ children, ...props }: Props) => {
         },
       ]}
       margin={0}
-      height={300}
+      height={500}
     />
   ) : (
     <></>
