@@ -41,6 +41,16 @@ const BudgetSection = ({ children, ...props }: Props) => {
     }
   };
 
+  const getBudgetItemsTotal = () => {
+    let totalCost = 0;
+
+    props.budgetItems.forEach((budgetItem) => {
+      totalCost += Number(budgetItem.cost);
+    });
+
+    return "$" + totalCost;
+  };
+
   return (
     <>
       <BudgetCategoriesModal
@@ -134,6 +144,14 @@ const BudgetSection = ({ children, ...props }: Props) => {
                   </TableCell>
                 </TableRow>
               ))}
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  <b>Total</b>
+                </TableCell>
+                <TableCell align="left">
+                  <b>{getBudgetItemsTotal()}</b>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>

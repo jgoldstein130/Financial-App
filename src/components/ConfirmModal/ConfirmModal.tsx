@@ -35,7 +35,7 @@ const ConfirmModal = ({ children, ...props }: Props) => {
           </Button>
           <Button
             variant="contained"
-            color="primary"
+            style={{ backgroundColor: "#6e85f8" }}
             onClick={() => {
               confirmModalFunction();
               setIsConfirmModalOpen(false);

@@ -18,6 +18,7 @@ import { ColorResult } from "react-color";
 import { Category } from "../../app/budget/page";
 import DeleteButton from "../DeleteButton/DeleteButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { FaPlus } from "react-icons/fa";
 
 const BudgetCategoriesModal = ({ children, ...props }: Props) => {
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
@@ -54,7 +55,16 @@ const BudgetCategoriesModal = ({ children, ...props }: Props) => {
           <IconButton onClick={props.onClose} sx={{ position: "absolute", top: 8, right: 8 }}>
             <CloseIcon />
           </IconButton>
-          <div className="mb-4 font-bold">Categories</div>
+          <div className="mb-4 font-bold flex gap-2">
+            Categories
+            <FaPlus
+              onClick={() => {
+                props.addCategory("New Category", getRandomHexColor());
+              }}
+              size={25}
+              color="#b8b8b8"
+            />
+          </div>
           <TableContainer component={Paper} style={{ maxHeight: 350, overflowY: "auto" }}>
             <Table stickyHeader aria-label="category table">
               <TableBody>
@@ -92,15 +102,6 @@ const BudgetCategoriesModal = ({ children, ...props }: Props) => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Button
-            variant="contained"
-            style={{ backgroundColor: "#6e85f8", marginTop: "15px" }}
-            onClick={() => {
-              props.addCategory("New Category", getRandomHexColor());
-            }}
-          >
-            New Category
-          </Button>
           <Modal open={showColorPicker} onClose={() => setShowColorPicker(false)}>
             <Box
               sx={{

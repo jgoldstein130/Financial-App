@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { Button, CardContent, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Button, Card, CardContent, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { getFederalTaxData } from "../../utils/ApiService";
 import { PieChart } from "@mui/x-charts";
 
@@ -51,10 +51,10 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
   useEffect(() => {
     const getTaxData = async () => {
       if (salary) {
-        //const federalTaxDataResponse = await getFederalTaxData(salaryNumber, filingStatus);
-        //setFederalTaxData(federalTaxDataResponse);
-        console.log("TEST MODE ENABLED");
-        setFederalTaxData(testData);
+        const federalTaxDataResponse = await getFederalTaxData(salaryNumber, filingStatus);
+        setFederalTaxData(federalTaxDataResponse);
+        //console.log("TEST MODE ENABLED");
+        //setFederalTaxData(testData);
       }
     };
     getTaxData();
@@ -160,21 +160,20 @@ const IncomeBreakdown = ({ children, ...props }: Props) => {
                     ],
                   },
                 ]}
-                width={400}
-                height={300}
+                width={300}
+                height={250}
               />
             </div>
-            <div
-              className="p-4 flex flex-col"
-              style={{ border: "1px solid gray", borderRadius: "5px", minWidth: "250px" }}
-            >
+            <Card className="p-4 rounded-lg shadow-sm border border-gray-200" style={{ height: "250px" }}>
+              <p>Income After Tax: ${getIncomeAfterTax().toFixed(2)}</p>
+              <p>Monthly Income After Tax: ${(getIncomeAfterTax() / 12).toFixed(2)}</p>
               <p>Federal Income Tax: ${federalTaxData.federal_taxes_owed.toFixed(2)}</p>
               <p>Social Security: ${federalTaxData.fica_social_security.toFixed(2)}</p>
               <p>Medicare: ${federalTaxData.fica_medicare.toFixed(2)}</p>
               <p>
                 State Income Tax: ${stateTaxRate ? Number((salaryNumber * Number(stateTaxRate)) / 100).toFixed(2) : 0}
               </p>
-            </div>
+            </Card>
           </div>
         )}
       </div>

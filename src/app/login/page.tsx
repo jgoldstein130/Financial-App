@@ -32,7 +32,7 @@ const SignUpPage = () => {
       });
       const sessionId = await sessionIdCall.text();
       if (sessionId) {
-        router.push("/");
+        router.push("/budget");
       }
     };
 
@@ -75,7 +75,7 @@ const SignUpPage = () => {
       body: JSON.stringify({ name: "sessionId", value: loginResponse }),
     });
 
-    router.push("/");
+    router.push("/budget");
   };
 
   return (

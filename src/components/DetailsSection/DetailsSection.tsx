@@ -43,7 +43,6 @@ const DetailsSection = ({ children, ...props }: Props) => {
 
       const response = await accountsCall.json();
       setAccounts(response);
-      console.log(response);
     };
 
     getHasConnectedBank();
@@ -61,18 +60,20 @@ const DetailsSection = ({ children, ...props }: Props) => {
             display: "flex",
             flexDirection: "column",
             gap: "10px",
-            width: "300px",
+            width: "500px",
           }}
         >
           <TextField
             label="Age"
             variant="outlined"
+            size="small"
             fullWidth
             onChange={(e) => props.setCurrentAge(Number(e.target.value))}
           />
           <TextField
             label="Retirement Age"
             variant="outlined"
+            size="small"
             fullWidth
             onChange={(e) => props.setRetirementAge(Number(e.target.value))}
           />
@@ -93,17 +94,22 @@ const DetailsSection = ({ children, ...props }: Props) => {
             display: "flex",
             flexDirection: "column",
             gap: "10px",
+            width: "100%",
           }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
             {accounts.map((account, index) => (
-              <Card key={index} className="p-4 rounded-lg shadow-sm border border-gray-200">
+              <Card
+                key={index}
+                className="p-4 rounded-lg shadow-sm border border-gray-200"
+                style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}
+              >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800">{account.name}</h3>
                     <p className="text-sm text-gray-500">Type: {account.subtype}</p>
                   </div>
-                  <div className="mt-2 sm:mt-0 text-right">
+                  <div className="text-right">
                     <p className="text-sm text-gray-700">
                       <span className="font-medium text-gray-600">Available:</span>{" "}
                       <span className="font-semibold text-green-600">
