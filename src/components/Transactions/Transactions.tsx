@@ -1,9 +1,7 @@
 import { Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
-import PlaidLink from "../PlaidLink/PlaidLink";
 import {
   ClickAwayListener,
   FormControl,
-  InputAdornment,
   InputLabel,
   MenuItem,
   MenuList,
@@ -196,10 +194,24 @@ const Transactions = ({ children, ...props }: Props) => {
     return str.replace(/(?!^)-|[^0-9.-]/g, "");
   };
 
+  const getTransactionsTotal = () => {
+    let totalAmount = 0;
+
+    props.transactions.forEach((transaction) => {
+      totalAmount += Number(transaction.amount);
+    });
+
+    if (totalAmount >= 0) {
+      return "$" + totalAmount;
+    } else {
+      return "-$" + totalAmount * -1;
+    }
+  };
+
   return (
     <div>
       {props.hasConnectedBank && accounts.length > 0 && (
-        <TableContainer component={Paper} style={{ maxHeight: "500px" }}>
+        <TableContainer component={Paper} style={{ maxHeight: "515px" }}>
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>
@@ -395,13 +407,19 @@ const Transactions = ({ children, ...props }: Props) => {
                   </TableCell>
                 </TableRow>
               ))}
+              <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                <TableCell component="th" scope="row">
+                  <b>Total</b>
+                </TableCell>
+                <TableCell component="th" scope="row"></TableCell>
+                <TableCell align="right" style={{ width: "100px" }}>
+                  <b>{getTransactionsTotal()}</b>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
       )}
-      <div className="mt-4">
-        <PlaidLink text={props.hasConnectedBank ? "Connect a Different Bank" : "Connect a Bank"} />
-      </div>
     </div>
   );
 };

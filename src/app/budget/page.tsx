@@ -14,6 +14,7 @@ import Transactions from "@/components/Transactions/Transactions";
 import BudgetCategoriesModal from "@/components/BudgetCategoriesModal/BudgetCategoriesModal";
 import { hexToRgb, rgbToHex } from "@/utils/Utilities";
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import PlaidLink from "@/components/PlaidLink/PlaidLink";
 
 export interface BudgetItem {
   id: string;
@@ -299,9 +300,12 @@ const Budget = () => {
               <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px" }}>
                 <div className="flex flex-col p-4">
                   <div className="flex justify-between items-center pb-4">
-                    <Typography variant="h6">
-                      <b>Transactions</b>
-                    </Typography>
+                    <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                      <Typography variant="h6">
+                        <b>Transactions</b>
+                      </Typography>
+                      <PlaidLink text={hasConnectedBank ? "Connect a Different Bank" : "Connect a Bank"} />
+                    </div>
                     <FaPlus onClick={addTransaction} size={25} color="#b8b8b8" />
                   </div>
                   <Transactions
@@ -315,6 +319,14 @@ const Budget = () => {
                     setIsCategoriesModalOpen={setIsCategoriesModalOpen}
                     getCategoryColorFromId={getCategoryColorFromId}
                   />
+                </div>
+              </div>
+              <div style={{ flex: 0.5, backgroundColor: "white", borderRadius: "10px" }}>
+                <div className="flex flex-col p-4">
+                  <Typography variant="h6">
+                    <b>Income Breakdown</b>
+                  </Typography>
+                  <IncomeBreakdown />
                 </div>
               </div>
             </div>
@@ -381,23 +393,6 @@ const Budget = () => {
                     </Bar>
                   </BarChart>
                 </CardContent>
-              </div>
-            </div>
-            <div
-              style={{
-                flex: 1.5,
-                display: "flex",
-                flexDirection: "row",
-                gap: 30,
-              }}
-            >
-              <div style={{ flex: 1, backgroundColor: "white", borderRadius: "10px", marginBottom: "30px" }}>
-                <div className="flex flex-col p-4">
-                  <Typography variant="h6">
-                    <b>Income Breakdown</b>
-                  </Typography>
-                  <IncomeBreakdown />
-                </div>
               </div>
             </div>
           </div>
